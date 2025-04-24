@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE DROP-DOWN BY SHIVANG</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .select-container {
+            position: relative;
+        }
+        .select-container select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+        .result-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+        .result-card:hover {
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        .result-header {
+            background-color: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        .badge-yes {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        .badge-no {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        .badge-maybe {
+            background-color: #fff7ed;
+            color: #9a3412;
+        }
+        .placeholder {
+            border: 2px dashed #e5e7eb;
+            border-radius: 10px;
+            background-color: #f9fafb;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        tr:hover {
+            background-color: #f9fafb;
+        }
+        .not-found {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="py-8 px-4">
+    <div class="container">
+        <!-- Header -->
+        <div class="header mb-6">
+            <h1 class="text-3xl font-bold mb-2">DROP-DOWN BY SHIVANG</h1>
+            <p class="text-lg opacity-90">Quick access to policy amendment requirements, documents, and charges for various insurance companies</p>
+        </div>
+
+        <!-- Selection Controls -->
+        <div class="bg-white p-6 rounded-lg shadow mb-6">
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label for="insurance-company" class="block text-sm font-medium text-gray-700 mb-2">Select Insurance Company</label>
+                    <div class="select-container">
+                        <select id="insurance-company" class="block w-full py-3 px-4 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="">Select an insurance company</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label for="amendment-type" class="block text-sm font-medium text-gray-700 mb-2">Select Amendment Type</label>
+                    <div class="select-container">
+                        <select id="amendment-type" class="block w-full py-3 px-4 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="">Select an amendment type</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results-container" class="mb-6">
+            <div id="no-selection" class="placeholder p-10 text-center text-gray-500">
+                <i class="fas fa-search text-4xl mb-4"></i>
+                <p class="text-lg">Please select an insurance company and amendment type to view requirements</p>
+            </div>
+            <div id="results" class="result-card hidden">
+                <div class="result-header p-5">
+                    <h2 id="result-title" class="text-xl font-bold text-gray-800">Amendment Requirements</h2>
+                    <p id="result-subtitle" class="text-sm text-gray-600 mt-1"></p>
+                </div>
+                <div class="p-5">
+                    <table class="w-full">
+                        <tr>
+                            <th class="w-1/3">Attribute</th>
+                            <th class="w-2/3">Details</th>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">Endorsement Type</td>
+                            <td id="endorsement-type">-</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">Required Documents</td>
+                            <td id="documents">-</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">Turnaround Time</td>
+                            <td id="tat">-</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">Charges/Deduction</td>
+                            <td id="charges">-</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">Inspection Required</td>
+                            <td id="inspection">-</td>
+                        </tr>
+                        <tr id="exception-row">
+                            <td class="font-medium">Exceptions</td>
+                            <td id="exceptions">-</td>
+                        </tr>
+                        <tr id="declaration-row">
+                            <td class="font-medium">Declaration Format</td>
+                            <td id="declaration">-</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div id="not-found" class="not-found hidden">
+                <i class="fas fa-exclamation-circle text-2xl mr-2"></i>
+                <span>No information found for the selected combination. Please try a different selection.</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CSV data stored as JavaScript array
+        const insuranceData = [
+        ["Insurer", "Requirement", "Endorsement type", "Documents or any other requirement", "TAT", "Charges / Deduction", "Inspection", "Any Exception", "Declaration format (if declaration required)"],["Digit", "Addition of GST No.", "Non Financial Endt", "GST Certificate in the name of Insured", "SRS / 10 Days", "No", "No", "Correction possible only within a month of policy start date", ""],
+["National", "Addition of GST No.", "Non Financial Endt", "GST Certificate in the name of Insured", "SRS / 10 Days", "No", "No", "", ""],
+["National", "Chassis Number", "Self Endt", "RC Required", "SRS / 10 Days", "No", "No", "", ""],
+["National", "Colour Change", "Non Financial Endt", "RC Required", "SRS / 10 Days", "No", "No", "", ""],
+["National", "Engine Number", "Self Endt", "RC Required", "SRS / 10 Days", "No", "No", "", ""],
+["National", "Hypothecation Remove", "Self Endt", "Bank NOC", "SRS / 10 Days", "No", "No", "", ""],
+["National", "Hypothecation Add", "Non Financial Endt", "Updated RC or Loan Sanction letter", "SRS / 10 Days", "No", "No", "", ""],
+["National", "Hypothecation Change", "Non Financial Endt", "RC and Previous Bank NOC", "SRS / 10 Days", "No", "No", "", ""],
+["National", "Insured name", "Financial Endt", "RC , Previous year policy, Aadhar or pan", "SRS / 10 Days", "Yes", "No", "Proceed with O/t incase cx doesn't have PYP", ""],
+["National", "NCB Certificate", "Financial Endt", "Updated RC, Sell letter, PYP , NCB confirmation and cancellation declaration", "SRS / 10 Days", "May Be", "No", "Updated RC will not be required after policy expiry", "In case you are selling this vehicle & not cancelling the policy then you have to do an ownership transfer or you can also share 29-30 forms because without this insurer will not share NCB Certificate."],
+["or In case you want to cancel this policy then, a refund will be processed against the own damage premium part and a third party premium will be retained at the insurer's end as per the process.", "", "", "", "", "", "", "", ""],
+["National", "Registration Date", "Financial Endt", "RC Required", "SRS / 10 Days", "May Be", "No", "", ""],
+["National", "Regst. Number", "Non Financial Endt", "RC Required", "SRS / 10 Days", "No", "No", "", ""],
+["National", "RTO Endorsement", "Financial Endt", "RC Required", "SRS / 10 Days", "May Be", "No", "", ""],
+["National", "Seating Capacity", "Non Financial Endt", "RC Required", "SRS / 10 Days", "May Be", "No", "", ""],
+["National", "Period of Insurance (POI)", "Not Possible", "cannot be change", "SRS / 10 Days", "No", "No", "", ""],
+["National", "PYP Details- POI or Insurer or Policy number", "Self Endt", "Previous Year Policy", "SRS / 10 Days", "No", "No", "", ""],
+["National", "TP details", "Self Endt", "Bundle Policy Required", "SRS / 10 Days", "No", "No", "", ""],
+["National", "Communication Address", "Nil Endt", "Complete address required", "SRS / 10 Days", "No", "No", "", ""],
+["National", "Date of Birth (DOB)", "Not Possible", "", "SRS / 10 Days", "No", "No", "", ""],
+["National", "Email Address", "Nil Endt", "Updated Email Id", "SRS / 10 Days", "No", "No", "", ""],
+["National", "Mobile Number", "Nil Endt", "Updated mobile no.", "SRS / 10 Days", "No", "No", "", ""],
+["National", "Nominee Details", "Nil Endt", "Nominee details", "SRS / 10 Days", "No", "No", "", ""],
+["National", "Salutation", "Nil Endt", "Correct salutation", "SRS / 10 Days", "No", "No", "", ""],
+["National", "Owner Driver Personal Accident", "Not Possible", "cannot be added", "SRS / 10 Days", "", "No", "", ""],
+["National", "Paid Driver", "Not Possible", "cannot be added", "SRS / 10 Days", "", "No", "", ""],
+["National", "Un Named Passanger Cover", "Not Possible", "cannot be added", "SRS / 10 Days", "", "No", "", ""],
+["National", "CNG Addition External", "Financial Endt", "RC and CNG Invoice", "SRS / 10 Days", "Yes", "Yes", "", ""],
+["National", "CNG Addition Company fitted", "Financial Endt", "RC Required", "SRS / 10 Days", "Yes", "Maybe", "", ""],
+["National", "Cubic Capacity (CC)", "Financial Endt", "RC Required", "SRS / 10 Days", "May Be", "No", "", ""],
+["National", "Fuel Type (Petrol - Diesel/Diesel - petrol)", "Self Endt", "RC Required", "SRS / 10 Days", "May Be", "No", "", ""],
+["National", "IDV Change", "Not Possible", "Cannot be change", "SRS / 10 Days", "", "", "", ""],
+["National", "Manufactured Date", "Self Endt", "RC Required", "SRS / 10 Days", "May Be", "No", "", ""],
+["National", "Make/Model/Variant", "Financial Endt", "RC Required", "SRS / 10 Days", "May Be", "Maybe", "", ""],
+["National", "Ownership Transfer", "Financial Endt", "RC , New owner details and Pan card Aadhar or pan of new insured", "SRS / 10 Days", "Yes", "Maybe", "", ""],
+["National", "NCB Correction (taken extra NCB)", "Financial Endt", "Previous Year policy and NCB Confirmation", "SRS / 10 Days", "Yes", "Maybe", "", ""],
+["National", "NCB Correction (taken less NCB)", "Financial Endt", "Previous Year policy and NCB Confirmation", "SRS / 10 Days", "Refund", "Maybe", "", ""],
+["National", "Top Up (PAYD plan)", "Not Possible", "", "SRS / 10 Days", "", "", "", ""],
+["National", "Multiple Mismatch (Reg no. chassis no & Engine no mismatch)", "Not Possible", "cannot be change", "SRS / 10 Days", "", "No", "OD Part could be cancelled with deduction in comprehensive policy", ""],
+["National", "Post Issuance Cancellation", "Financial Endt", "Alternate Policy , Written Consent and NEFT of insured as per policy", "SRS / 10 Days", "Yes", "No", "", ""],
+["Liberty", "Addition of GST No.", "Non Financial Endt", "GST Certificate in the name of Insured & Endorsement form will be provided by TL / ticketing team", "SRS / 10 Days", "No", "No", "Endorsement form to be filled and raised to insurer", ""],
+["Liberty", "Chassis Number", "Non Financial Endt", "RC & Endorsement form will be provided by TL / ticketing team", "SRS / 10 Days", "No", "No", "Endorsement form to be filled and raised to insurer", ""],
+["Liberty", "Colour Change", "Non Financial Endt", "RC & Endorsement form will be provided by TL / ticketing team", "SRS / 10 Days", "No", "No", "Endorsement form to be filled and raised to insurer", ""],
+["Liberty", "Engine Number", "Non Financial Endt", "RC & Endorsement form will be provided by TL / ticketing team", "SRS / 10 Days", "No", "No", "Endorsement form to be filled and raised to insurer", ""],
+["Liberty", "Hypothecation Remove", "Non Financial Endt", "RC ,Bank NOC & Endorsement form will be provided by TL / ticketing team", "SRS / 10 Days", "No", "No", "Endorsement form to be filled and raised to insurer", ""],
+["Liberty", "Hypothecation Add", "Non Financial Endt", "Updated RC or Loan Sanction letter & Endorsement form will be provided by TL / ticketing team", "SRS / 10 Days", "No", "No", "Endorsement form to be filled and raised to insurer", ""],
+["Liberty", "Hypothecation Change", "Non Financial Endt", "RC ,Previous Bank NOC & Endorsement form will be provided by TL / ticketing team", "SRS / 10 Days", "No", "No", "Endorsement form to be filled and raised to insurer", ""],
+["Liberty", "Insured name", "Non Financial Endt", "RC , Masked Aadhar Card , pan card ,Previous Year Policy & Endorsement form will be provided by TL / ticketing team", "SRS / 10 Days", "No", "No", "Will be considered as o/t incase of complete name mismatch", ""],
+["Endorsement form to be filled and raised to insurer", "", "", "", "", "", "", "", ""],
+["Liberty", "NCB Certificate", "Financial Endt", "Sell letter , Previous Year Policy , NCB Confirmation and cancellation declaration", "SRS / 10 Days", "May Be", "Maybe", "", ""],
+["Liberty", "Registration Date", "Financial Endt", "RC & Endorsement form will be provided by TL / ticketing team", "SRS / 10 Days", "May Be", "Maybe", "Endorsement form to be filled and raised to insurer", ""],
+["Liberty", "Regst. Number", "Financial Endt", "RC & Endorsement form will be provided by TL / ticketing team", "SRS / 10 Days", "May Be", "No", "Endorsement form to be filled and raised to insurer", ""],
+["Liberty", "RTO Endorsement", "Financial Endt", "RC & Endorsement form will be provided by TL / ticketing team", "SRS / 10 Days", "May Be", "No", "Endorsement form to be filled and raised to insurer", ""],
+["Liberty", "Seating Capacity", "Financial Endt", "RC & Endorsement form will be provided by TL / ticketing team", "SRS / 10 Days", "May Be", "No", "Endorsement form to be filled and raised to insurer", ""],
+["Liberty", "Period of Insurance POI", "Non Financial Endt", "RC ,previous Year Policy & Endorsement form will be provided by TL / ticketing team", "SRS / 10 Days", "No", "No", "Backdated correction not possible + Endorsement form to be filled and raised to insurer", ""],
+["Liberty", "PYP Details- POI or Insurer or Policy number", "Non Financial Endt", "RC ,previous Year Policy & Endorsement form will be provided by TL / ticketing team", "SRS / 10 Days", "No", "No", "Endorsement form to be filled and raised to insurer", ""],
+["Liberty", "TP details", "Non Financial Endt", "RC ,previous Year Policy ,bundle Policy & Endorsement form will be provided by TL / ticketing team", "SRS / 10 Days", "No", "No", "Endorsement form to be filled and raised to insurer", ""],
+["Liberty", "Communication Address", "Non Financial Endt", "Address Proof & Endorsement form will be provided by TL / ticketing team", "SRS / 10 Days", "No", "No", "Endorsement form to be filled and raised to insurer", ""],
+["Liberty", "Date of Birth DOB", "Not Possible", "", "SRS / 10 Days", "No", "No", "", ""],
+["Liberty", "Email Address", "Not Possible", "", "SRS / 10 Days", "No", "No", "", ""],
+["Liberty", "Mobile Number", "Non Financial Endt", "Endorsement form will be provided by TL / ticketing team", "SRS / 10 Days", "No", "No", "Endorsement form to be filled and raised to insurer", ""],
+["Liberty", "Nominee Details", "Non Financial Endt", "Endorsement form will be provided by TL / ticketing team", "SRS / 10 Days", "No", "No", "Endorsement form to be filled and raised to insurer", ""],
+["Liberty", "Salutation", "Non Financial Endt", "Endorsement form will be provided by TL / ticketing team", "SRS / 10 Days", "No", "No", "Endorsement form to be filled and raised to insurer", ""],
+["Liberty", "Owner Driver Personal Accident", "Not Possible", "", "SRS / 10 Days", "No", "No", "", ""],
+["Liberty", "Paid Driver", "Not Possible", "", "SRS / 10 Days", "", "No", "", ""],
+["Liberty", "Un Named Passanger Cover", "Not Possible", "", "SRS / 10 Days", "", "No", "", ""],
+["Liberty", "CNG Addition External", "Financial Endt", "RC , CNG Invoice & Endorsement form will be provided by TL / ticketing team", "SRS / 10 Days", "Yes", "Yes", "Endorsement form to be filled and raised to insurer + Inspection to be raised from Insurer portal from insurer end", ""],
+["Liberty", "CNG Addition Company fitted", "Financial Endt", "RC & Endorsement form will be provided by TL / ticketing team", "SRS / 10 Days", "Yes", "Maybe", "Endorsement form to be filled and raised to insurer", ""],
+["Liberty", "Cubic Capacity CC", "Financial Endt", "RC & Endorsement form will be provided by TL / ticketing team", "SRS / 10 Days", "May be", "No", "Endorsement form to be filled and raised to insurer", ""],
+["Liberty", "Fuel Type Petrol - Diesel/Diesel - petrol", "Financial Endt", "RC & Endorsement form will be provided by TL / ticketing team", "SRS / 10 Days", "May be", "No", "Endorsement form to be filled and raised to insurer", ""],
+["Liberty", "IDV Change", "Not Possible", "", "SRS / 10 Days", "", "", "", ""],
+["Liberty", "Manufactured Date", "Financial Endt", "RC & Endorsement form will be provided by TL / ticketing team", "SRS / 10 Days", "May Be", "No", "Endorsement form to be filled and raised to insurer", ""],
+["Liberty", "Make/Model/Variant", "Financial Endt", "RC & Endorsement form will be provided by TL / ticketing team", "SRS / 10 Days", "May Be", "No", "Endorsement form to be filled and raised to insurer", ""],
+["Liberty", "Ownership Transfer", "Financial Endt", "RC ,KYC , NOC and Transfer Form will be provided by TL / Ticketing team", "SRS / 10 Days", "Yes", "Yes", "Endorsement form to be filled and raised to insurer + Inspection to be raised from Insurer portal from insurer end", ""],
+["Liberty", "NCB Correction taken extra NCB", "Financial Endt", "Previous Year Policy and written consent", "SRS / 10 Days", "Yes", "Yes", "Inspection to be raised from Insurer portal from insurer end", ""],
+["Liberty", "NCB Correction taken less NCB", "Financial Endt", "Previous Year Policy and NCB Confirmation", "SRS / 10 Days", "Refund", "Yes", "Inspection to be raised from Insurer portal from insurer end", ""],
+["Liberty", "Top Up PAYD plan", "Not Possible", "", "SRS / 10 Days", "", "No", "", ""],
+["Liberty", "Multiple Mismatch Reg no. chassis no & Engine no mismatch", "Not Possible", "Cannot be correct", "SRS / 10 Days", "", "No", "OD Part could be cancelled with deduction in comprehensive policy", ""],
+["Liberty", "Post Issuance Cancellation", "Not Possible", "Alternate Policy and Endorsement form will be provided by TL / ticketing team", "SRS / 10 Days", "Yes", "No", "Endorsement form to be filled and raised to insurer", ""],["Digit", "Chassis Number", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+["Digit", "Colour Change", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+["Digit", "Engine Number", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+["Digit", "Hypothecation Remove", "Non Financial Endt", "RC, NOC", "SRS / 10 Days", "No", "No", "", ""],
+["Digit", "Hypothecation Add", "Non Financial Endt", "Updated RC or Loan sanction letter", "SRS / 10 Days", "No", "No", "", ""],
+["Digit", "Hypothecation Change", "Non Financial Endt", "Updated RC or NOC", "SRS / 10 Days", "No", "No", "", ""],
+["Digit", "Insured name", "Non Financial Endt", "RC, PYP, KYC", "SRS / 10 Days", "No", "No", "Proceed with O/t incase cx doesn't have PYP", ""],
+["Digit", "NCB Certificate", "Financial Endt", "Sale letter, PYP, NCB Confirmation letter", "SRS / 10 Days", "Yes", "No", "", "Sample declaration- We request to kindly confirm whether you want to cancel the Own damage part of the policy or want to recover the ncb."],
+["Digit", "Registration Date", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["Digit", "Regst. Number", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["Digit", "RTO Endorsement", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["Digit", "Seating Capacity", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["Digit", "Period of Insurance (POI)", "Non Financial Endt", "PYP", "SRS / 10 Days", "No", "No", "Correction possible before policy start date", ""],
+["Digit", "PYP Details- POI or Insurer or Policy number", "Non Financial Endt", "PYP", "SRS / 10 Days", "No", "No", "", ""],
+["Digit", "TP details", "Non Financial Endt", "Bundled TP", "SRS / 10 Days", "No", "No", "", ""],
+["Digit", "Communication Address", "Non Financial Endt", "Complete address with pincode", "SRS / 10 Days", "No", "No", "", ""],
+["Digit", "Date of Birth (DOB)", "Not Possible", "", "SRS / 10 Days", "No", "No", "", ""],
+["Digit", "Email Address", "Non Financial Endt", "Complete Email ID", "SRS / 10 Days", "No", "No", "", ""],
+["Digit", "Mobile Number", "Non Financial Endt", "Mobile Number", "SRS / 10 Days", "No", "No", "", ""],
+["Digit", "Nominee Details", "Non Financial Endt", "Nominee Details", "SRS / 10 Days", "No", "No", "", ""],
+["Digit", "Salutation", "Non Financial Endt", "Correct salutation", "SRS / 10 Days", "No", "No", "", ""],
+["Digit", "Owner Driver Personal Accident", "Financial Endt", "RC, DL, Nominee Details", "SRS / 10 Days", "Yes", "No", "Correction possible before policy start date", ""],
+["Digit", "Paid Driver", "Financial Endt", "RC, Salary slip of last 3 months, DL of the driver", "SRS / 10 Days", "Yes", "No", "Correction possible before policy start date", ""],
+["Digit", "Un Named Passanger Cover", "Financial Endt", "RC, written confirmation of coverage for Rs.50 - 1L and Rs.100/- 2L", "SRS / 10 Days", "Yes", "No", "Correction possible before policy start date", ""],
+["Digit", "CNG Addition External", "Financial Endt", "RC, CNG Invoice", "SRS / 10 Days", "Yes", "Yes", "", ""],
+["Digit", "CNG Addition Company fitted", "Financial Endt", "RC, PYP", "SRS / 10 Days", "Yes", "Yes", "", ""],
+["Digit", "Cubic Capacity (CC)", "Financial Endt", "RC", "SRS / 10 Days", "Yes", "No", "", ""],
+["Digit", "Fuel Type (Petrol - Diesel/Diesel - petrol)", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "Yes", "", ""],
+["Digit", "IDV Change", "Not Possible", "", "SRS / 10 Days", "No", "No", "", ""],
+["Digit", "Manufactured Date", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["Digit", "Make/Model/Variant", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["Digit", "Ownership Transfer", "Financial Endt", "RC, New owner details, KYC", "SRS / 10 Days", "Yes", "Yes", "", ""],
+["Digit", "NCB Correction (taken extra NCB)", "Financial Endt", "PYP, NCB Confirmation", "SRS / 10 Days", "Yes", "No", "", ""],
+["Digit", "NCB Correction (taken less NCB)", "Financial Endt", "PYP, NCB Confirmation", "SRS / 10 Days", "Refund", "No", "", ""],
+["Digit", "Top Up (PAYD plan)", "Not Possible", "", "SRS / 10 Days", "No", "No", "", ""],
+["Digit", "Multiple Mismatch (Reg no. chassis no & Engine no mismatch)", "Not Possible", "", "SRS / 10 Days", "No", "No", "OD Part could be cancelled with deduction in comprehensive policy", ""],
+["Digit", "Post Issuance Cancellation", "", "Alternate Policy", "SRS / 10 Days", "Yes", "", "", ""],
+["Chola", "Addition of GST No.", "Non Financial Endt", "GST Certificate in the name of Insured", "SRS / 10 Days", "No", "No", "", ""],
+["Chola", "Chassis Number", "Self Endt", "RC Required", "SRS / 10 Days", "No", "No", "", ""],
+["Chola", "Colour Change", "Non Financial Endt", "RC Required", "SRS / 10 Days", "No", "No", "", ""],
+["Chola", "Engine Number", "Self Endt", "RC Required", "SRS / 10 Days", "No", "No", "", ""],
+["Chola", "Hypothecation Remove", "Nil Endt", "Bank NOC", "SRS / 10 Days", "No", "No", "", ""],
+["Chola", "Hypothecation Add", "Nil Endt", "Updated RC or Loan Sanction letter", "SRS / 10 Days", "No", "No", "", ""],
+["Chola", "Hypothecation Change", "Nil Endt", "Updated RC and Previous Bank NOC", "SRS / 10 Days", "No", "No", "", ""],
+["Chola", "Insured name", "Self Endt", "RC ,PYP and KYC", "SRS / 10 Days", "No", "No", "Proceed with O/t incase cx doesn't have PYP", ""],
+["Chola", "NCB Certificate", "Financial Endt", "Sell Letter with stamp / RC cancellation receipt or NCB Recovery (Charges)", "SRS / 10 Days", "May Be", "No", "", ""],
+["Chola", "Registration Date", "Financial Endt", "RC Required", "SRS / 10 Days", "May Be", "No", "", ""],
+["Chola", "Regst. Number", "Self Endt", "RC Required", "SRS / 10 Days", "No", "No", "", ""],
+["Chola", "RTO Endorsement", "Non Financial Endt", "RC Required", "SRS / 10 Days", "No", "No", "", ""],
+["Chola", "Seating Capacity", "Financial Endt", "RC Required", "SRS / 10 Days", "May Be", "No", "", ""],
+["Chola", "Period of Insurance (POI)", "Non Financial Endt", "Previous Year Policy (Backdated POI request - correction not Possible)", "SRS / 10 Days", "No", "No", "", ""],
+["Chola", "PYP Details- POI or Insurer or Policy number", "Non Financial Endt", "Previous Year Policy", "SRS / 10 Days", "No", "No", "", ""],
+["Chola", "TP details", "Non Financial Endt", "TP Policy", "SRS / 10 Days", "No", "No", "", ""],
+["Chola", "Communication Address", "Nil Endt", "Written consent", "SRS / 10 Days", "No", "No", "", ""],
+["Chola", "Date of Birth (DOB)", "Not Applicable", "", "SRS / 10 Days", "No", "No", "", ""],
+["Chola", "Email Address", "Nil Endt", "updated email id", "SRS / 10 Days", "No", "No", "", ""],
+["Chola", "Mobile Number", "Nil Endt", "updated mobile no.", "SRS / 10 Days", "No", "No", "", ""],
+["Chola", "Nominee Details", "Nil Endt", "Nominee details ( if pa is added)", "SRS / 10 Days", "No", "No", "", ""],
+["Chola", "Salutation", "Nil Endt", "Correct salutation", "SRS / 10 Days", "No", "No", "", ""],
+["Chola", "Owner Driver Personal Accident", "Not Applicable", "cannot be added", "SRS / 10 Days", "", "No", "", ""],
+["Chola", "Paid Driver", "Not Applicable", "cannot be added", "SRS / 10 Days", "", "No", "", ""],
+["Chola", "Un Named Passanger Cover", "Not Applicable", "cannot be added", "SRS / 10 Days", "", "No", "", ""],
+["Chola", "CNG Addition External", "Financial Endt", "RC and CNG Invoice Required", "SRS / 10 Days", "Yes", "No", "", ""],
+["Chola", "CNG Addition Company fitted", "Financial Endt", "RC Required", "SRS / 10 Days", "May Be", "No", "", ""],
+["Chola", "Cubic Capacity (CC)", "Financial Endt", "RC Required", "SRS / 10 Days", "May Be", "No", "", ""],
+["Chola", "Fuel Type (Petrol - Diesel/Diesel - petrol)", "Financial Endt", "RC Required", "SRS / 10 Days", "May Be", "No", "", ""],
+["Chola", "IDV Change", "Not Applicable", "cannot be change", "SRS / 10 Days", "", "No", "", ""],
+["Chola", "Manufactured Date", "Financial Endt", "RC Required", "SRS / 10 Days", "May Be", "No", "", ""],
+["Chola", "Make/Model/Variant", "Nil Endt", "RC Required", "SRS / 10 Days", "May Be", "No", "", ""],
+["Chola", "Ownership Transfer", "Self Financial Endt", "RC, New owner details and KYC Required ( need to raise to insurer in case of reg. no. change)", "SRS / 10 Days", "Yes", "No", "", ""],
+["Chola", "NCB Correction (taken extra NCB)", "Financial Endt", "Previous Year Policy and NCB Confirmation", "SRS / 10 Days", "Yes", "No", "", ""],
+["Chola", "NCB Correction (taken less NCB)", "Financial Endt", "Previous Year Policy and NCB Confirmation", "SRS / 10 Days", "Refund", "No", "", ""],
+["Chola", "Top Up (PAYD plan)", "Not Applicable", "", "SRS / 10 Days", "", "No", "", ""],
+["Chola", "Multiple Mismatch (Reg no. chassis no & Engine no mismatch)", "Not Applicable", "Not Possible", "SRS / 10 Days", "", "No", "OD Part could be cancelled with deduction in comprehensive policy", ""],
+["Chola", "Post Issuance Cancellation", "Not Applicable", "Alternate Policy", "SRS / 10 Days", "Yes", "No", "", ""],
+["Bajaj", "Addition of GST No.", "Non Financial Endt", "GST Certificate in the name of Insured", "SRS / 10 Days", "No", "No", "", ""],
+["Bajaj", "Chassis Number", "Self Endt", "RC Required", "SRS / 10 Days", "No", "No", "", ""],
+["Bajaj", "Colour Change", "Non Financial Endt", "RC Required", "SRS / 10 Days", "No", "No", "", ""],
+["Bajaj", "Engine Number", "Non Financial Endt", "RC Required", "SRS / 10 Days", "No", "No", "", ""],
+["Bajaj", "Hypothecation Remove", "Non Financial Endt", "Bank NOC Required", "SRS / 10 Days", "No", "No", "", ""],
+["Bajaj", "Hypothecation Add", "Non Financial Endt", "Updated RC or Loan Sanction letter", "SRS / 10 Days", "No", "No", "", ""],
+["Bajaj", "Hypothecation Change", "Self Endt", "RC and Previous Bank NOC Required", "SRS / 10 Days", "No", "No", "", ""],
+["Bajaj", "Insured name", "Self Endt", "RC and Previous Year Policy", "SRS / 10 Days", "No", "No", "Proceed with O/t incase cx doesn't have PYP", ""],
+["Bajaj", "NCB Certificate", "Financial Endt", "Sell Letter and cancellation declaration", "SRS / 10 Days", "May be", "Maybe", "", "1. If cx wishes to cancel - In case of cancellation od part will be refunded and Tp will be retained 2.If cx don't wan't to cancel - ncb recovery need to pay and inspection will applicable"],
+["Bajaj", "Registration Date", "Non Financial Endt", "RC Required and KYC", "SRS / 10 Days", "May be", "No", "", ""],
+["Bajaj", "Regst. Number", "Self Endt", "RC Required", "SRS / 10 Days", "No", "No", "", ""],
+["Bajaj", "RTO Endorsement", "Financial Endt", "RC Required", "SRS / 10 Days", "May be", "No", "", ""],
+["Bajaj", "Seating Capacity", "Financial Endt", "RC and KYC", "SRS / 10 Days", "May be", "No", "", ""],
+["Bajaj", "Period of Insurance (POI)", "Non Financial Endt", "RC ,Previous Year Policy and KYC", "SRS / 10 Days", "May be", "No", "", ""],
+["Bajaj", "PYP Details- POI or Insurer or Policy number", "Non Financial Endt", "RC ,Previous Year Policy and KYC", "SRS / 10 Days", "No", "No", "", ""],
+["Bajaj", "TP details", "Non Financial Endt", "RC ,Previous Year Policy , Bundle Policy and KYC", "SRS / 10 Days", "No", "No", "", ""],
+["Bajaj", "Communication Address", "Non Financial Endt", "Complete Address with Pincode", "SRS / 10 Days", "No", "No", "", ""],
+["Bajaj", "Date of Birth (DOB)", "Not Possible", "", "SRS / 10 Days", "No", "No", "", ""],
+["Bajaj", "Email Address", "Nil Endt", "Email Id", "SRS / 10 Days", "No", "No", "", ""],
+["Bajaj", "Mobile Number", "Nil Endt", "Mobile No.", "SRS / 10 Days", "No", "No", "", ""],
+["Bajaj", "Nominee Details", "Nil Endt", "Nominee Details", "SRS / 10 Days", "No", "No", "", ""],
+["Bajaj", "Salutation", "Non Financial Endt", "Correct Salutation", "SRS / 10 Days", "No", "No", "", ""],
+["Bajaj", "Owner Driver Personal Accident", "Financial Endt", "RC ,Driving License ,pan card and Nominee Details", "SRS / 10 Days", "Yes", "No", "", ""],
+["Bajaj", "Paid Driver", "Financial Endt", "RC ,Driving License of Driver and 3 Months Salary slip", "SRS / 10 Days", "Yes", "No", "", ""],
+["Bajaj", "Un Named Passanger Cover", "Financial Endt", "RC , KYC and written confirmation of coverage for Rs.50 - 1L and Rs.100/- 2L", "SRS / 10 Days", "Yes", "No", "", ""],
+["Bajaj", "CNG Addition External", "Financial Endt", "RC and CNG Invoice", "SRS / 10 Days", "Yes", "Maybe", "", ""],
+["Bajaj", "CNG Addition Company fitted", "Financial Endt", "RC Required", "SRS / 10 Days", "Yes", "Maybe", "", ""],
+["Bajaj", "Cubic Capacity (CC)", "Financial Endt", "RC and KYC", "SRS / 10 Days", "May be", "No", "Raise to insurer with Quote with correct cc", ""],
+["Bajaj", "Fuel Type (Petrol - Diesel/Diesel - petrol)", "Financial Endt", "RC Required", "SRS / 10 Days", "May be", "Maybe", "", ""],
+["Bajaj", "IDV Change", "Not Possible", "cannot be change", "SRS / 10 Days", "", "", "", ""],
+["Bajaj", "Manufactured Date", "Financial Endt", "RC and KYC", "SRS / 10 Days", "May Be", "No", "", ""],
+["Bajaj", "Make/Model/Variant", "Financial Endt", "RC , KYC", "SRS / 10 Days", "May Be", "Maybe", "Raise to insurer with Quote with MMV", ""],
+["Bajaj", "Ownership Transfer", "Financial Endt", "RC , KYC and proposal Form", "SRS / 10 Days", "Yes", "Maybe", "", ""],
+["Bajaj", "NCB Correction (taken extra NCB)", "Financial Endt", "Previous Year Policy and confirmation if customer has taken claim or not", "SRS / 10 Days", "Yes", "Maybe", "", ""],
+["Bajaj", "NCB Correction (taken less NCB)", "Financial Endt", "Previous Year Policy and confirmation if customer has taken claim or not", "SRS / 10 Days", "Refund", "Maybe", "", ""],
+["Bajaj", "Top Up (PAYD plan)", "Financial Endt", "RC and KYC and written or verbal confirmation for KM (min 2km & max 6km)", "SRS / 10 Days", "Yes", "Yes", "", ""],
+["Bajaj", "Multiple Mismatch (Reg no. chassis no & Engine no mismatch)", "Not Possible", "cannot be change", "SRS / 10 Days", "", "No", "OD Part could be cancelled with deduction in comprehensive policy", ""],
+["Bajaj", "Post Issuance Cancellation", "Financial Endt", "Alternate Policy", "SRS / 10 Days", "May Be", "No", "cancellation is possible before policy start date without alternate policy, note that request to be raised before 24 hrs of RSD", ""],
+["Reliance", "Addition of GST No.", "Non Financial Endt", "GST Certificate in the name of Insured and Pan Card", "SRS / 10 Days", "No", "No", "GST Addition not possible in Xpas plan", ""],
+["Reliance", "Chassis Number", "Non Financial Endt", "RC Required", "SRS / 10 Days", "No", "No", "", ""],
+["Reliance", "Colour Change", "Nil Endt", "RC Required", "SRS / 10 Days", "No", "No", "", ""],
+["Reliance", "Engine Number", "Non Financial Endt", "RC Required", "SRS / 10 Days", "No", "No", "", ""],
+["Reliance", "Hypothecation Remove", "Non Financial Endt", "Bank NOC", "SRS / 10 Days", "No", "No", "", ""],
+["Reliance", "Hypothecation Add", "Nil Endt", "Updated RC or Loan Sanction letter", "SRS / 10 Days", "No", "No", "", ""],
+["Reliance", "Hypothecation Change", "Self Endt", "RC and Previous Bank NOC", "SRS / 10 Days", "No", "No", "", ""],
+["Reliance", "Insured name", "Non Financial Endt", "RC,KYC , PYP", "SRS / 10 Days", "No", "No", "Proceed with O/t incase cx doesn't have PYP", ""],
+["Reliance", "NCB Certificate", "Financial Endt", "Sale Letter and cancellation declaration", "SRS / 10 Days", "Yes", "Maybe", "Inspection to be raised from Reliance portal (from insurer end)", "In case of cancellation alternate policy or sell proof and ncb recover will be done and refund will be declared as per U/W 2. If don't want to cancel only ncb recovery has to be done and cx process the ot also"],
+["Reliance", "Registration Date", "Financial Endt", "RC Required", "SRS / 10 Days", "May be", "No", "", ""],
+["Reliance", "Regst. Number", "Financial Endt", "RC Required", "SRS / 10 Days", "May be", "No", "", ""],
+["Reliance", "RTO Endorsement", "Financial Endt", "RC Required", "SRS / 10 Days", "May be", "No", "", ""],
+["Reliance", "Seating Capacity", "Financial Endt", "RC Required", "SRS / 10 Days", "May be", "No", "", ""],
+["Reliance", "Period of Insurance (POI)", "Non Financial Endt", "RC,KYC , PYP", "SRS / 10 Days", "May be", "No", "Correction not possible in Xpas plan", ""],
+["Reliance", "PYP Details- POI or Insurer or Policy number", "Non Financial Endt", "RC,KYC , PYP", "SRS / 10 Days", "No", "No", "", ""],
+["Reliance", "TP details", "Non Financial Endt", "RC,KYC , PYP and Bundle Policy", "SRS / 10 Days", "No", "No", "", ""],
+["Reliance", "Communication Address", "Non Financial Endt", "Address Proof of insured", "SRS / 10 Days", "No", "No", "Nil Endt incase of Xpas plan", ""],
+["Reliance", "Date of Birth (DOB)", "Non Financial Endt", "", "SRS / 10 Days", "No", "No", "", ""],
+["Reliance", "Email Address", "Non Financial Endt", "Updated email id", "SRS / 10 Days", "No", "No", "Nil Endt incase of Xpas plan", ""],
+["Reliance", "Mobile Number", "Non Financial Endt", "Updated mobile no.", "SRS / 10 Days", "No", "No", "Nil Endt incase of Xpas plan", ""],
+["Reliance", "Nominee Details", "Non Financial Endt", "Nominee ID proof", "SRS / 10 Days", "No", "No", "Nil Endt incase of Xpas plan", ""],
+["Reliance", "Salutation", "Non Financial Endt", "Insured ID Proof", "SRS / 10 Days", "No", "No", "Nil Endt incase of Xpas plan", ""],
+["Reliance", "Owner Driver Personal Accident", "Not Possible", "cannot be added", "SRS / 10 Days", "No", "No", "", ""],
+["Reliance", "Paid Driver", "Not Possible", "cannot be added", "SRS / 10 Days", "", "No", "", ""],
+["Reliance", "Un Named Passanger Cover", "Not Possible", "cannot be added", "SRS / 10 Days", "", "No", "", ""],
+["Reliance", "CNG Addition External", "Financial Endt", "RC and CNG Invoice", "SRS / 10 Days", "Yes", "Yes", "Inspection to be raised from Reliance portal (from insurer end)", ""],
+["Reliance", "CNG Addition Company fitted", "Financial Endt", "RC Required", "SRS / 10 Days", "Yes", "Yes", "Inspection to be raised from Reliance portal (from insurer end)", ""],
+["Reliance", "Cubic Capacity (CC)", "Financial Endt", "RC Required", "SRS / 10 Days", "May be", "No", "", ""],
+["Reliance", "Fuel Type (Petrol - Diesel/Diesel - petrol)", "Financial Endt", "RC Required", "SRS / 10 Days", "May be", "No", "", ""],
+["Reliance", "IDV Change", "Not Possible", "", "SRS / 10 Days", "", "No", "", ""],
+["Reliance", "Manufactured Date", "Financial Endt", "RC Required", "SRS / 10 Days", "May Be", "No", "", ""],
+["Reliance", "Make/Model/Variant", "Financial Endt", "RC Required", "SRS / 10 Days", "May Be", "Maybe", "Inspection to be raised from Reliance portal (from insurer end)", ""],
+["Reliance", "Ownership Transfer", "Financial Endt", "RC , NOC ,New owner details and Pa Cover declaration", "SRS / 10 Days", "Yes", "Maybe", "Inspection to be raised from Reliance portal (from insurer end)", ""],
+["Reliance", "NCB Correction (taken extra NCB)", "Financial Endt", "PYP and NCB Confirmation", "SRS / 10 Days", "Yes", "Yes", "Inspection to be raised from Reliance portal (from insurer end)", ""],
+["Reliance", "NCB Correction (taken less NCB)", "Financial Endt", "PYP and NCB Confirmation", "SRS / 10 Days", "Refund", "No", "", ""],
+["Reliance", "Top Up (PAYD plan)", "Nil Endt", "Cx request from my account (Kms to top up)", "SRS / 10 Days", "Yes", "Yes", "", ""],
+["Reliance", "Multiple Mismatch (Reg no. chassis no & Engine no mismatch)", "Not Possible", "cannot be change", "SRS / 10 Days", "", "No", "OD Part could be cancelled with deduction in comprehensive policy", ""],
+["Reliance", "Post Issuance Cancellation", "Not Possible", "Alternate Policy", "SRS / 10 Days", "Yes", "No", "", ""],
+["Oriental", "Addition of GST No.", "Non Financial Endt", "GST Certificate in the name of Insured", "SRS / 10 Days", "No", "No", "", ""],
+["Oriental", "Chassis Number", "Self Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+["Oriental", "Colour Change", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+["Oriental", "Engine Number", "Self Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+["Oriental", "Hypothecation Remove", "Non Financial Endt", "NOC and RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["Oriental", "Hypothecation Add", "Non Financial Endt", "Updated RC and Loan Sanction Letter", "SRS / 10 Days", "No", "No", "", ""],
+["Oriental", "Hypothecation Change", "Self Endt", "Updated RC and Loan Sanction Letter", "SRS / 10 Days", "No", "No", "", ""],
+["Oriental", "Insured name", "Non Financial Endt", "RC, PYP and KYC of RC owner", "SRS / 10 Days", "No", "No", "Proceed with O/t incase cx doesn't have PYP", "I certify that I have applied for the Correction in Insured name in policy no. __________________. This is not the case of Ownership transfer and there is no known or reported loss till date. I certify that the above facts are true to the best of my knowledge and if found false, I am liable for it and Insurer has the right to cancel the policy without any refund."],
+["Oriental", "NCB Certificate", "Financial Endt", "Sale Letter and PYP", "SRS / 10 Days", "Yes", "No", "Charges would not be required incase policy has expired", ""],
+["Oriental", "Registration Date", "Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+["Oriental", "Regst. Number", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "Charges may be applicable incase of state / RTO code change", ""],
+["Oriental", "RTO Endorsement", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["Oriental", "Seating Capacity", "Self Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["Oriental", "Period of Insurance (POI)", "Not Possible", "", "SRS / 10 Days", "No", "No", "", ""],
+["Oriental", "PYP Details- POI or Insurer or Policy number", "Financial Endt", "PYP", "SRS / 10 Days", "No", "No", "", ""],
+["Oriental", "TP details", "Financial Endt", "Third party Bundle Policy", "SRS / 10 Days", "No", "No", "", ""],
+["Oriental", "Communication Address", "Nil Endt", "Complete address with pincode", "SRS / 10 Days", "No", "No", "", ""],
+["Oriental", "Date of Birth (DOB)", "Nil Endt", "Complete DOB", "SRS / 10 Days", "No", "No", "", ""],
+["Oriental", "Email Address", "Nil Endt", "Complete Email ID", "SRS / 10 Days", "No", "No", "", ""],
+["Oriental", "Mobile Number", "Nil Endt", "Mobile Number", "SRS / 10 Days", "No", "No", "", ""],
+["Oriental", "Nominee Details", "Nil Endt", "Nominee Details", "SRS / 10 Days", "No", "No", "", ""],
+["Oriental", "Salutation", "Non Financial Endt", "Correct salutation", "SRS / 10 Days", "No", "No", "", ""],
+["Oriental", "Owner Driver Personal Accident", "Not Possible", "Not Possible", "SRS / 10 Days", "No", "No", "", ""],
+["Oriental", "Paid Driver", "Not Possible", "Not Possible", "SRS / 10 Days", "No", "No", "", ""],
+["Oriental", "Un Named Passanger Cover", "Not Possible", "Not Possible", "SRS / 10 Days", "No", "No", "", ""],
+["Oriental", "CNG Addition External", "Financial Endt", "RC, CNG invoice or PYP with CNG value", "SRS / 10 Days", "Yes", "Yes", "", ""],
+["Oriental", "CNG Addition Company fitted", "Financial Endt", "RC Copy and PYP", "SRS / 10 Days", "Yes", "Maybe", "", ""],
+["Oriental", "Cubic Capacity (CC)", "Financial Endt", "RC charges may be applicable", "SRS / 10 Days", "Maybe", "No", "", ""],
+["Oriental", "Fuel Type (Petrol - Diesel/Diesel - petrol)", "Non Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["Oriental", "IDV Change", "Not Possible", "Not Possible", "SRS / 10 Days", "No", "No", "", ""],
+["Oriental", "Manufactured Date", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["Oriental", "Make/Model/Variant", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["Oriental", "Ownership Transfer", "Financial Endt", "RC, KYC, New owner detail, declaration", "SRS / 10 Days", "Yes", "Yes", "", "I certify that I have applied for the transfer of ownership in policy no. __________________ and there is no known or reported loss till date. I certify that the above facts are true to the best of my knowledge and if found false, I am liable for it and Insurer has the right to cancel the policy without any refund."],
+["Oriental", "NCB Correction (taken extra NCB)", "Financial Endt", "PYP", "SRS / 10 Days", "Yes", "No", "", ""],
+["Oriental", "NCB Correction (taken less NCB)", "Financial Endt", "PYP and NCB confirmation letter", "SRS / 10 Days", "Refund", "No", "", ""],
+["Oriental", "Top Up (PAYD plan)", "Not Possible", "N\A", "SRS / 10 Days", "No", "No", "", ""],
+["Oriental", "Multiple Mismatch (Reg no. chassis no & Engine no mismatch)", "Not Possible", "Not Possible", "SRS / 10 Days", "No", "No", "", ""],
+["Oriental", "Post Issuance Cancellation", "", "Alternate Policy, Reason and Declaration", "SRS / 10 Days", "No", "No", "To be raised on Mail", "Complete reason for cancellation from customer's registered email ID along with requested date and time, Declaration :- There is no claim running in the policy"],
+["Universal Sompo", "Addition of GST No.", "Non Financial Endt", "GST Certificate in the name of Insured", "SRS / 10 Days", "No", "No", "", ""],
+["Universal Sompo", "Chassis Number", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+["Universal Sompo", "Colour Change", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+["Universal Sompo", "Engine Number", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+["Universal Sompo", "Hypothecation Remove", "Self Endt", "NOC", "SRS / 10 Days", "No", "No", "", ""],
+["Universal Sompo", "Hypothecation Add", "Self Endt", "Updated RC and Loan Sanction Letter", "SRS / 10 Days", "No", "No", "", ""],
+["Universal Sompo", "Hypothecation Change", "Self Endt", "Updated RC and Loan Sanction Letter", "SRS / 10 Days", "No", "No", "", ""],
+["Universal Sompo", "Insured name", "Non Financial Endt", "RC, PYP and KYC of RC owner", "SRS / 10 Days", "No", "No", "CKYC number or PAN and Adhar will required + Proceed with O/t incase cx doesn't have PYP", ""],
+["Universal Sompo", "NCB Certificate", "Financial Endt", "Sale Letter or Updated RC , PYP and NCB confirmation", "SRS / 10 Days", "Maybe", "No", "", ""],
+["Universal Sompo", "Registration Date", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["Universal Sompo", "Regst. Number", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["Universal Sompo", "RTO Endorsement", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["Universal Sompo", "Seating Capacity", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["Universal Sompo", "Period of Insurance (POI)", "Non Financial Endt", "PYP", "SRS / 10 Days", "No", "No", "", ""],
+["Universal Sompo", "PYP Details- POI or Insurer or Policy number", "Non Financial Endt", "PYP", "SRS / 10 Days", "No", "No", "", ""],
+["Universal Sompo", "TP details", "Non Financial Endt", "Third party Bundle Policy", "SRS / 10 Days", "No", "No", "", ""],
+["Universal Sompo", "Communication Address", "Nil Endt", "Complete address with pincode", "SRS / 10 Days", "No", "No", "", ""],
+["Universal Sompo", "Date of Birth (DOB)", "Nil Endt", "Complete DOB", "SRS / 10 Days", "No", "No", "", ""],
+["Universal Sompo", "Email Address", "Nil Endt", "Complete Email ID", "SRS / 10 Days", "No", "No", "", ""],
+["Universal Sompo", "Mobile Number", "Nil Endt", "Mobile Number", "SRS / 10 Days", "No", "No", "", ""],
+["Universal Sompo", "Nominee Details", "Nil Endt", "Nominee Details", "SRS / 10 Days", "No", "No", "", ""],
+["Universal Sompo", "Salutation", "Nil Endt", "Correct salutation", "SRS / 10 Days", "No", "No", "", ""],
+["Universal Sompo", "Owner Driver Personal Accident", "Not Possible", "", "SRS / 10 Days", "No", "No", "", ""],
+["Universal Sompo", "Paid Driver", "Not Possible", "", "SRS / 10 Days", "No", "No", "", ""],
+["Universal Sompo", "Un Named Passanger Cover", "Not Possible", "", "SRS / 10 Days", "No", "No", "", ""],
+["Universal Sompo", "CNG Addition External", "Financial Endt", "RC, CNG Kit invoice", "SRS / 10 Days", "Yes", "Yes", "", ""],
+["Universal Sompo", "CNG Addition Company fitted", "Financial Endt", "RC Copy, PYP", "SRS / 10 Days", "Yes", "Maybe", "", ""],
+["Universal Sompo", "Cubic Capacity (CC)", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["Universal Sompo", "Fuel Type (Petrol - Diesel/Diesel - petrol)", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+["Universal Sompo", "IDV Change", "Not Possible", "", "SRS / 10 Days", "No", "No", "", ""],
+["Universal Sompo", "Manufactured Date", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["Universal Sompo", "Make/Model/Variant", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["Universal Sompo", "Ownership Transfer", "Financial Endt", "RC, KYC, New owner detail", "SRS / 10 Days", "Yes", "Yes", "CKYC number or PAN and Adhar will required", ""],
+["Universal Sompo", "NCB Correction (taken extra NCB)", "Financial Endt", "PYP & NCB confirmation letter", "SRS / 10 Days", "Yes", "Maybe", "", ""],
+["Universal Sompo", "NCB Correction (taken less NCB)", "Financial Endt", "PYP & NCB confirmation letter", "SRS / 10 Days", "Refund", "Maybe", "", ""],
+["Universal Sompo", "Top Up (PAYD plan)", "Financial Endt", "Kilometers to be top up", "SRS / 10 Days", "Yes", "Yes", "Odometer only inspection required", ""],
+["Universal Sompo", "Multiple Mismatch (Reg no. chassis no & Engine no mismatch)", "Non Financial Endt", "Not Possible", "SRS / 10 Days", "No", "No", "", ""],
+["Universal Sompo", "Post Issuance Cancellation", "", "Alternate Policy (should be updated on vahan)", "SRS / 10 Days", "Deduction", "", "", ""],
+["Shriram", "Addition of GST No.", "Non Financial Endt", "GST Certificate in the name of Insured", "SRS / 10 Days", "No", "No", "", ""],
+["Shriram", "Chassis Number", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+["Shriram", "Colour Change", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+["Shriram", "Engine Number", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+["Shriram", "Hypothecation Remove", "Self Endt", "NOC", "SRS / 10 Days", "No", "No", "", ""],
+["Shriram", "Hypothecation Add", "Self Endt", "Updated RC and Loan Sanction Letter", "SRS / 10 Days", "No", "No", "", ""],
+["Shriram", "Hypothecation Change", "Self Endt", "Updated RC and Loan Sanction Letter", "SRS / 10 Days", "No", "No", "", ""],
+["Shriram", "Insured name", "Non Financial Endt", "RC, PYP and KYC of RC owner", "SRS / 10 Days", "No", "No", "Proceed with O/t incase cx doesn't have PYP", ""],
+["Shriram", "NCB Certificate", "Financial Endt", "Sale Letter and Updated RC or form 29 and 30 with rto stamp , PYP and NCB confirmation", "SRS / 10 Days", "Maybe", "No", "Need to raise on mail", ""],
+["Shriram", "Registration Date", "Non Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["Shriram", "Regst. Number", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "Maybe", "Inspection may be applicable", ""],
+["Shriram", "RTO Endorsement", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "Maybe", "Inspection may be applicable", ""],
+["Shriram", "Seating Capacity", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["Shriram", "Period of Insurance (POI)", "Not Possible", "", "SRS / 10 Days", "No", "No", "", ""],
+["Shriram", "PYP Details- POI or Insurer or Policy number", "Non Financial Endt", "PYP", "SRS / 10 Days", "No", "No", "", ""],
+["Shriram", "TP details", "Non Financial Endt", "Third party Bundle Policy", "SRS / 10 Days", "No", "No", "", ""],
+["Shriram", "Communication Address", "Nil Endt", "Complete address with pincode", "SRS / 10 Days", "No", "No", "", ""],
+["Shriram", "Date of Birth (DOB)", "Nil Endt", "Complete DOB", "SRS / 10 Days", "No", "No", "", ""],
+["Shriram", "Email Address", "Nil Endt", "Complete Email ID", "SRS / 10 Days", "No", "No", "", ""],
+["Shriram", "Mobile Number", "Nil Endt", "Mobile Number", "SRS / 10 Days", "No", "No", "", ""],
+["Shriram", "Nominee Details", "Nil Endt", "Nominee Details", "SRS / 10 Days", "No", "No", "", ""],
+["Shriram", "Salutation", "Nil Endt", "correct salutation", "SRS / 10 Days", "No", "No", "", ""],
+["Shriram", "Owner Driver Personal Accident", "Financial Endt", "RC Copy, Nominee detail. DL", "SRS / 10 Days", "Yes", "No", "", ""],
+["Shriram", "Paid Driver", "Financial Endt", "RC, DL of driver, Salary slip or bank statement", "SRS / 10 Days", "Yes", "No", "", ""],
+["Shriram", "Un Named Passanger Cover", "Financial Endt", "RC & confirmation from cx if he wants to opt Rs 50/seat or Rs 100/seat", "SRS / 10 Days", "Yes", "No", "", ""],
+["Shriram", "CNG Addition External", "Financial Endt", "RC copy, CNG Kit invoice", "SRS / 10 Days", "Yes", "Yes", "", ""],
+["Shriram", "CNG Addition Company fitted", "Financial Endt", "RC Copy, PYP", "SRS / 10 Days", "Yes", "Maybe", "", ""],
+["Shriram", "Cubic Capacity (CC)", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["Shriram", "Fuel Type (Petrol - Diesel/Diesel - petrol)", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+["Shriram", "IDV Change", "Not Possible", "Not Possible", "SRS / 10 Days", "No", "No", "", ""],
+["Shriram", "Manufactured Date", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["Shriram", "Make/Model/Variant", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "Maybe", "Inspection may be applicable", ""],
+["Shriram", "Ownership Transfer", "Financial Endt", "RC, KYC, New owner detail", "SRS / 10 Days", "Yes", "Yes", "", ""],
+["Shriram", "NCB Correction (taken extra NCB)", "Financial Endt", "PYP & NCB confirmation letter", "SRS / 10 Days", "Yes", "Maybe", "", ""],
+["Shriram", "NCB Correction (taken less NCB)", "Financial Endt", "PYP & NCB confirmation letter", "SRS / 10 Days", "Refund", "No", "", ""],
+["Shriram", "Top Up (PAYD plan)", "Financial Endt", "Kilometers to be top up", "SRS / 10 Days", "Yes", "Yes", "Odometer only inspection required", ""],
+["Shriram", "Multiple Mismatch (Reg no. chassis no & Engine no mismatch)", "Not Possible", "Not Possible", "SRS / 10 Days", "No", "No", "", ""],
+["Shriram", "Post Issuance Cancellation", "", "Alternate Policy along with customer consent", "SRS / 10 Days", "Deduction", "", "", ""],
+["Kotak", "Addition of GST No.", "Self Endt", "GST Certificate in the name of Insured", "SRS / 10 Days", "No", "No", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "Chassis Number", "Self Endt", "RC", "SRS / 10 Days", "No", "No", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "Colour Change", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "Engine Number", "Self Endt", "RC", "SRS / 10 Days", "No", "No", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "Hypothecation Remove", "Non Financial Endt", "NOC", "SRS / 10 Days", "No", "No", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "Hypothecation Add", "Non Financial Endt", "Updated RC and Loan Sanction Letter", "SRS / 10 Days", "No", "No", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "Hypothecation Change", "Non Financial Endt", "Updated RC and Loan Sanction Letter", "SRS / 10 Days", "No", "No", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "Insured name", "Non Financial Endt", "RC, PYP and KYC of RC owner", "SRS / 10 Days", "No", "No", "PAN and Masked Adhar (If CKYC not done) + Proceed with O/t incase cx doesn't have PYP", ""],
+["Kotak", "NCB Certificate", "Financial Endt", "Sale Letter or Updated RC , PYP and NCB confirmation", "SRS / 10 Days", "Maybe", "No", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "Registration Date", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "Regst. Number", "Self Endt", "RC", "SRS / 10 Days", "Maybe", "No", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "RTO Endorsement", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "Seating Capacity", "Self Endt", "RC", "SRS / 10 Days", "Maybe", "No", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "Period of Insurance (POI)", "Non Financial Endt", "PYP", "SRS / 10 Days", "No", "No", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "PYP Details- POI or Insurer or Policy number", "Non Financial Endt", "PYP", "SRS / 10 Days", "No", "No", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "TP details", "Non Financial Endt", "Third party Bundle Policy", "SRS / 10 Days", "No", "No", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "Communication Address", "Nil Endt", "Complete address with pincode", "SRS / 10 Days", "No", "No", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "Date of Birth (DOB)", "Nil Endt", "Complete DOB", "SRS / 10 Days", "No", "No", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "Email Address", "Nil Endt", "Complete Email ID", "SRS / 10 Days", "No", "No", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "Mobile Number", "Nil Endt", "Mobile Number", "SRS / 10 Days", "No", "No", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "Nominee Details", "Nil Endt", "Nominee Details", "SRS / 10 Days", "No", "No", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "Salutation", "Nil Endt", "correct salutation", "SRS / 10 Days", "No", "No", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "Owner Driver Personal Accident", "Financial Endt", "RC Copy, Nominee detail. DL", "SRS / 10 Days", "Yes", "No", "PAN and Masked Adhar ( If CKYC not done)", "Endt possible before policy start date"],
+["Kotak", "Paid Driver", "Financial Endt", "RC, DL of driver, Salary slip or bank statement", "SRS / 10 Days", "Yes", "No", "PAN and Masked Adhar ( If CKYC not done)", "Endt possible before policy start date"],
+["Kotak", "Un Named Passanger Cover", "Financial Endt", "RC & confirmation from cx if he wants to opt Rs 50/seat or Rs 100/seat", "SRS / 10 Days", "Yes", "No", "PAN and Masked Adhar ( If CKYC not done)", "Endt possible before policy start date"],
+["Kotak", "CNG Addition External", "Financial Endt", "RC & CNG Kit invoice", "SRS / 10 Days", "Yes", "Yes", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "CNG Addition Company fitted", "Financial Endt", "RC Copy ,PYP", "SRS / 10 Days", "Yes", "No", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "Cubic Capacity (CC)", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "Fuel Type (Petrol - Diesel/Diesel - petrol)", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "IDV Change", "Not Possible", "Not Possible", "SRS / 10 Days", "No", "No", "", ""],
+["Kotak", "Manufactured Date", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "Make/Model/Variant", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "Ownership Transfer", "Financial Endt", "RC, KYC, New owner detail", "SRS / 10 Days", "Yes", "Yes", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "NCB Correction (taken extra NCB)", "Financial Endt", "PYP & NCB confirmation letter", "SRS / 10 Days", "Yes", "Yes", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "NCB Correction (taken less NCB)", "Financial Endt", "PYP & NCB confirmation letter", "SRS / 10 Days", "Refund", "Yes", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "Top Up (PAYD plan)", "Not Possible", "", "SRS / 10 Days", "No", "", "", ""],
+["Kotak", "Multiple Mismatch (Reg no. chassis no & Engine no mismatch)", "Non Financial Endt", "Not Possible", "SRS / 10 Days", "No", "No", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["Kotak", "Post Issuance Cancellation", "", "Alternate Policy", "SRS / 10 Days", "Deduction", "", "PAN and Masked Adhar ( If CKYC not done)", ""],
+["HDFC", "Addition of GST No.", "Non Financial Endt", "GST Certificate in the name of Insured", "SRS / 10 Days", "No", "No", "Customer request from registered Email Required My Account", ""],
+["HDFC", "Chassis Number", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "Customer request from registered Email Required My Account", ""],
+["HDFC", "Colour Change", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "Customer request from registered Email Required My Account", ""],
+["HDFC", "Engine Number", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "Customer request from registered Email Required My Account", ""],
+["HDFC", "Hypothecation Remove", "Non Financial Endt", "RC and NOC", "SRS / 10 Days", "No", "No", "Customer request from registered Email Required My Account", ""],
+["HDFC", "Hypothecation Add", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "Customer request from registered Email Required My Account", ""],
+["HDFC", "Hypothecation Change", "Non Financial Endt", "RC and NOC", "SRS / 10 Days", "No", "No", "Customer request from registered Email Required My Account", ""],
+["HDFC", "Insured name", "Non Financial Endt", "RC, Pehchaan ID, PYP", "SRS / 10 Days", "No", "No", "Customer request from registered Email Required My Account + Proceed with O/t incase cx doesn't have PYP", "Pehchan ID link: https://pehchaan.hdfcergo.com/"],
+["HDFC", "NCB Certificate", "Financial Endt", "Sale Letter, PYP, NCB Confirmation letter", "SRS / 10 Days", "Maybe", "No", "Customer request from registered Email Required My Account", ""],
+["HDFC", "Registration Date", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "Customer request from registered Email Required My Account", ""],
+["HDFC", "Regst. Number", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "Customer request from registered Email Required My Account", ""],
+["HDFC", "RTO Endorsement", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "Customer request from registered Email Required My Account", ""],
+["HDFC", "Seating Capacity", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "Customer request from registered Email Required My Account", ""],
+["HDFC", "Period of Insurance (POI)", "Non Financial Endt", "PYP", "SRS / 10 Days", "No", "No", "Customer request from registered Email Required My Account", ""],
+["HDFC", "PYP Details- POI or Insurer or Policy number", "Non Financial Endt", "PYP", "SRS / 10 Days", "No", "No", "Customer request from registered Email Required My Account", ""],
+["HDFC", "TP details", "Non Financial Endt", "TP Bundle Policy", "SRS / 10 Days", "No", "No", "Customer request from registered Email Required My Account", ""],
+["HDFC", "Communication Address", "Non Financial Endt", "Address Proof", "SRS / 10 Days", "No", "No", "Customer request from registered Email Required My Account", ""],
+["HDFC", "Date of Birth (DOB)", "Non Financial Endt", "DOB proof", "SRS / 10 Days", "No", "No", "Customer request from registered Email Required My Account", ""],
+["HDFC", "Email Address", "Non Financial Endt", "New Mail ID", "SRS / 10 Days", "No", "No", "Customer request from registered Email Required My Account", ""],
+["HDFC", "Mobile Number", "Non Financial Endt", "New Mobile Number", "SRS / 10 Days", "No", "No", "Customer request from registered Email Required My Account", ""],
+["HDFC", "Nominee Details", "Nil Endt", "Nominee details", "SRS / 10 Days", "No", "No", "Customer request from registered Email Required My Account", ""],
+["HDFC", "Salutation", "Non Financial Endt", "Customer Request", "SRS / 10 Days", "No", "No", "Customer request from registered Email Required My Account", ""],
+["HDFC", "Owner Driver Personal Accident", "Financial Endt", "RC, DL and Nominee details", "SRS / 10 Days", "Yes", "No", "Customer request from registered Email Required My Account", ""],
+["HDFC", "Paid Driver", "Financial Endt", "DL, 3 months Salary slip of driver.", "SRS / 10 Days", "Yes", "No", "Customer request from registered Email Required My Account", ""],
+["HDFC", "Un Named Passanger Cover", "Financial Endt", "RC Copy along with confirmation of 1Lac/2Lacs per seat coverage addition.", "SRS / 10 Days", "Yes", "No", "Customer request from registered Email Required My Account", ""],
+["HDFC", "CNG Addition External", "Financial Endt", "RC, CNG Invoice", "SRS / 10 Days", "Yes", "Yes", "Customer request from registered Email Required My Account", ""],
+["HDFC", "CNG Addition Company fitted", "Financial Endt", "RC, PYP", "SRS / 10 Days", "Yes", "Yes", "Customer request from registered Email Required My Account", ""],
+["HDFC", "Cubic Capacity (CC)", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "Customer request from registered Email Required My Account", ""],
+["HDFC", "Fuel Type (Petrol - Diesel/Diesel - petrol)", "Self Endt", "RC", "SRS / 10 Days", "No", "No", "Customer request from registered Email Required My Account", ""],
+["HDFC", "IDV Change", "Not Possible", "", "SRS / 10 Days", "", "", "", ""],
+["HDFC", "Manufactured Date", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "Customer request from registered Email Required My Account", ""],
+["HDFC", "Make/Model/Variant", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "Customer request from registered Email Required My Account", ""],
+["HDFC", "Ownership Transfer", "Financial Endt", "RC, PA Declaration form in pdf,pehchaan id, New owner details.", "SRS / 10 Days", "Yes", "Yes", "Customer request from registered Email Required My Account", "Pehchan ID link: https://pehchaan.hdfcergo.com/"],
+["HDFC", "NCB Correction (taken extra NCB)", "Financial Endt", "Previous Year Policy", "SRS / 10 Days", "Yes", "Yes", "Customer request from registered Email Required My Account", ""],
+["HDFC", "NCB Correction (taken less NCB)", "Financial Endt", "Previous Year Policy,", "SRS / 10 Days", "Refund", "Yes", "Customer request from registered Email Required My Account", ""],
+["HDFC", "Top Up (PAYD plan)", "Not Possible", "", "SRS / 10 Days", "", "", "", ""],
+["HDFC", "Multiple Mismatch (Reg no. chassis no & Engine no mismatch)", "Non Financial Endt", "RC, PYP AND KYC", "SRS / 10 Days", "", "", "Customer request from registered Email Required My Account", ""],
+["HDFC", "Post Issuance Cancellation", "", "Alternate and KYC Documents along with NEFT details (NEFT only in 2W)", "SRS / 10 Days", "Yes", "No", "Customer request from registered Email Required My Account", ""],
+["ICICI", "Addition of GST No.", "Financial Endt", "GST Certificate in the name of Insured and Customer Written Consent (By Mail or My Account)", "SRS / 10 Days", "Maybe", "No", "", ""],
+["ICICI", "Chassis Number", "Self Endt", "RC and Customer Written Consent (By Mail or My Account)", "SRS / 10 Days", "No", "No", "", ""],
+["ICICI", "Colour Change", "Non Financial Endt", "RC and Customer Written Consent (By Mail or My Account)", "SRS / 10 Days", "No", "No", "", ""],
+["ICICI", "Engine Number", "Non Financial Endt", "RC and Customer Written Consent (By Mail or My Account)", "SRS / 10 Days", "No", "No", "", ""],
+["ICICI", "Hypothecation Remove", "Non Financial Endt", "RC and Customer Written Consent (By Mail or My Account)", "SRS / 10 Days", "No", "No", "", ""],
+["ICICI", "Hypothecation Add", "Non Financial Endt", "RC and Customer Written Consent (By Mail or My Account)", "SRS / 10 Days", "No", "No", "", ""],
+["ICICI", "Hypothecation Change", "Self Endt", "RC and Customer Written Consent (By Mail or My Account)", "SRS / 10 Days", "No", "No", "", ""],
+["ICICI", "Insured name", "Non Financial Endt", "RC,PYP, Aadhaar Card along with Customer Written Consent (By Mail or My Account)", "SRS / 10 Days", "No", "No", "", ""],
+["ICICI", "NCB Certificate", "Financial Endt", "Sale Letter, PYP, NCB Confirmation letter and Written consent from Customer (By Mail or My Account)", "SRS / 10 Days", "Maybe", "No", "", ""],
+["ICICI", "Registration Date", "Financial Endt", "RC and Customer Written Consent (By Mail or My Account)", "SRS / 10 Days", "Maybe", "No", "", ""],
+["ICICI", "Regst. Number", "Self Endt", "RC and Customer Written Consent (By Mail or My Account)", "SRS / 10 Days", "Maybe", "Maybe", "", ""],
+["ICICI", "RTO Endorsement", "Financial Endt", "RC and Customer Written Consent (By Mail or My Account)", "SRS / 10 Days", "Maybe", "No", "", ""],
+["ICICI", "Seating Capacity", "Financial Endt", "RC and Customer Written Consent (By Mail or My Account)", "SRS / 10 Days", "Maybe", "No", "", ""],
+["ICICI", "Period of Insurance (POI)", "Non Financial Endt", "Previous Year Policy and Customer Written Consent (By Mail or My Account)", "SRS / 10 Days", "No", "No", "", ""],
+["ICICI", "PYP Details- POI or Insurer or Policy number", "Non Financial Endt", "Previous Year Policy and Customer Written Consent (By Mail or My Account)", "SRS / 10 Days", "No", "No", "", ""],
+["ICICI", "TP details", "Non Financial Endt", "Bundled TP and Customer Written Consent (By Mail or My Account)", "SRS / 10 Days", "No", "No", "", ""],
+["ICICI", "Communication Address", "Nil Endt", "Address with Pincode", "SRS / 10 Days", "No", "No", "", ""],
+["ICICI", "Date of Birth (DOB)", "Non Financial Endt", "DOB proof and Customer Written Consent (By Mail or My Account)", "SRS / 10 Days", "No", "No", "", ""],
+["ICICI", "Email Address", "Nil Endt", "Email Id", "SRS / 10 Days", "No", "No", "", ""],
+["ICICI", "Mobile Number", "Nil Endt", "Mobile number", "SRS / 10 Days", "No", "No", "", ""],
+["ICICI", "Nominee Details", "Nil Endt", "Nominee details", "SRS / 10 Days", "No", "No", "", ""],
+["ICICI", "Salutation", "Non Financial Endt", "Customer Written Consent (By Mail or My Account)", "SRS / 10 Days", "No", "No", "", ""],
+["ICICI", "Owner Driver Personal Accident", "Financial Endt", "RC, DL Nominee details and written consent from customer (By Mail or My Account)", "SRS / 10 Days", "Yes", "No", "Addition possible only before policy start date", ""],
+["ICICI", "Paid Driver", "Financial Endt", "DL, 3 months Salary slip of driver and Written Consent from Customer (By Mail or My Account)", "SRS / 10 Days", "Yes", "No", "Addition possible only before policy start date", ""],
+["ICICI", "Un Named Passanger Cover", "Financial Endt", "RC Copy and Written consent from Customer along with confirmation of 1Lac/2Lacs per seat coverage addition. (By Mail or My Account)", "SRS / 10 Days", "Yes", "No", "Addition possible only before policy start date", ""],
+["ICICI", "CNG Addition External", "Financial Endt", "RC, CNG Invoice/PYP and Customer's Written Consent (By Mail or My Account)", "SRS / 10 Days", "Yes", "Yes", "", ""],
+["ICICI", "CNG Addition Company fitted", "Financial Endt", "RC, PYP and Written Consent from Customer (By Mail or My Account)", "SRS / 10 Days", "Yes", "Yes", "", ""],
+["ICICI", "Cubic Capacity (CC)", "Financial Endt", "RC and Customer Written Consent (By Mail or My Account)", "SRS / 10 Days", "Maybe", "No", "", ""],
+["ICICI", "Fuel Type (Petrol - Diesel/Diesel - petrol)", "Financial Endt", "RC and Customer Written Consent (By Mail or My Account)", "SRS / 10 Days", "Maybe", "No", "", ""],
+["ICICI", "IDV Change", "Not Possible", "Not Possible", "SRS / 10 Days", "No", "No", "", ""],
+["ICICI", "Manufactured Date", "Financial Endt", "RC and Customer Written Consent (By Mail or My Account)", "SRS / 10 Days", "Maybe", "No", "", ""],
+["ICICI", "Make/Model/Variant", "Financial Endt", "RC and Customer Written Consent (By Mail or My Account)", "SRS / 10 Days", "Maybe", "No", "", ""],
+["ICICI", "Ownership Transfer", "Financial Endt", "RC, Aadhaar Card and Pan Card (New owner), New owner details and customer's written consent (By Mail or My Account)", "SRS / 10 Days", "Yes", "Yes", "", ""],
+["ICICI", "NCB Correction (taken extra NCB)", "Financial Endt", "Previous Year Policy, NCB Confirmation letter from pyp insurer and Customer Written Consent (By Mail or My Account)", "SRS / 10 Days", "Yes", "Yes", "", ""],
+["ICICI", "NCB Correction (taken less NCB)", "Financial Endt", "Previous Year Policy, NCB Confirmation letter from pyp insurer and Customer Written Consent (By Mail or My Account)", "SRS / 10 Days", "Refund", "Yes", "", ""],
+["ICICI", "Top Up (PAYD plan)", "Financial Endt", "Customer Written Consent (By Mail or My Account)", "SRS / 10 Days", "Yes", "Yes", "", ""],
+["ICICI", "Multiple Mismatch (Reg no. chassis no & Engine no mismatch)", "Non Financial Endt", "Reg. date and MMV needs to be correct, then only correction is possible - RC PYP & Aadhaar and Pan required or else cancellation (RC, Alternate, Aadhaar and Pan required for cancellation)", "SRS / 10 Days", "No", "No", "", ""],
+["ICICI", "Post Issuance Cancellation", "", "Alternate policy and Customer's written consent (By Mail or My Account)", "SRS / 10 Days", "Deduction", "No", "", ""],
+["SBI", "Addition of GST No.", "Non Financial Endt", "Aadhaar and Pan Card with GST Certificate in the name of Insured", "SRS / 10 Days", "No", "No", "", ""],
+["SBI", "Chassis Number", "Non Financial Endt", "Aadhaar and Pan Card and RC", "SRS / 10 Days", "No", "No", "", ""],
+["SBI", "Colour Change", "Non Financial Endt", "Aadhaar and Pan Card and RC", "SRS / 10 Days", "No", "No", "", ""],
+["SBI", "Engine Number", "Non Financial Endt", "Aadhaar and Pan Card and RC", "SRS / 10 Days", "No", "No", "", ""],
+["SBI", "Hypothecation Remove", "Self Endt", "Aadhaar and Pan Card and RC", "SRS / 10 Days", "No", "No", "", ""],
+["SBI", "Hypothecation Add", "Self Endt", "Aadhaar and Pan Card and RC", "SRS / 10 Days", "No", "No", "", ""],
+["SBI", "Hypothecation Change", "Self Endt", "Aadhaar and Pan Card and RC", "SRS / 10 Days", "No", "No", "", ""],
+["SBI", "Insured name", "Non Financial Endt", "Aadhaar and Pan Card and RC with Owner serial no 1 and PYP", "SRS / 10 Days", "No", "No", "Incase of O.sno above 1 or pyp unavailibility - case to be considered as O/t", ""],
+["SBI", "NCB Certificate", "Financial Endt", "Aadhaar and Pan Card, Sale Letter, PYP, NCB Confirmation letter", "SRS / 10 Days", "Yes", "No", "", ""],
+["SBI", "Registration Date", "Financial Endt", "Aadhaar and Pan Card and RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["SBI", "Regst. Number", "Financial Endt", "Aadhaar and Pan Card and RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["SBI", "RTO Endorsement", "Financial Endt", "Aadhaar and Pan Card and RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["SBI", "Seating Capacity", "Financial Endt", "Aadhaar and Pan Card and RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["SBI", "Period of Insurance (POI)", "Non Financial Endt", "Aadhaar and Pan Card along with Previous year policy copy", "SRS / 10 Days", "No", "No", "", ""],
+["SBI", "PYP Details- POI or Insurer or Policy number", "Non Financial Endt", "Aadhaar and Pan Card along with Previous year policy copy", "SRS / 10 Days", "No", "No", "", ""],
+["SBI", "TP details", "Non Financial Endt", "Aadhaar and Pan Card along with Bundled policy copy", "SRS / 10 Days", "No", "No", "", ""],
+["SBI", "Communication Address", "Nil Endt", "Address with Pincode", "SRS / 10 Days", "No", "No", "", ""],
+["SBI", "Date of Birth (DOB)", "Non Financial Endt", "Aadhaar and Pan Card", "SRS / 10 Days", "No", "No", "", ""],
+["SBI", "Email Address", "Nil Endt", "Email Id", "SRS / 10 Days", "No", "No", "", ""],
+["SBI", "Mobile Number", "Nil Endt", "Mobile Number", "SRS / 10 Days", "No", "No", "", ""],
+["SBI", "Nominee Details", "Nil Endt", "Nominee details", "SRS / 10 Days", "No", "No", "", ""],
+["SBI", "Salutation", "Nil Endt", "Correct Salutation", "SRS / 10 Days", "No", "No", "", ""],
+["SBI", "Owner Driver Personal Accident", "Financial Endt", "Aadhaar and Pan Card, RC, DL and nominee details and nominee's id proof", "SRS / 10 Days", "Yes", "No", "", ""],
+["SBI", "Paid Driver", "Financial Endt", "DL of driver, Aadhaar and Pan Card of owner, 3 months salary slip", "SRS / 10 Days", "Yes", "No", "", ""],
+["SBI", "Un Named Passanger Cover", "Financial Endt", "RC Copy and Aadhaar Card and Pan Card along with confirmation of 1Lac/2Lacs per seat coverage addition.", "SRS / 10 Days", "Yes", "No", "", ""],
+["SBI", "CNG Addition External", "Financial Endt", "Aadhaar and Pan Card, RC, CNG Invoice or Pyp", "SRS / 10 Days", "Yes", "Yes", "", ""],
+["SBI", "CNG Addition Company fitted", "Financial Endt", "Aadhaar and Pan Card, RC and PYP", "SRS / 10 Days", "Yes", "Yes", "", ""],
+["SBI", "Cubic Capacity (CC)", "Financial Endt", "Aadhaar and Pan Card and RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["SBI", "Fuel Type (Petrol - Diesel/Diesel - petrol)", "Financial Endt", "Aadhaar and Pan Card and RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["SBI", "IDV Change", "Not Possible", "Not Possible", "SRS / 10 Days", "", "", "", ""],
+["SBI", "Manufactured Date", "Financial Endt", "Aadhaar and Pan Card and RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["SBI", "Make/Model/Variant", "Financial Endt", "Aadhaar and Pan Card and RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["SBI", "Ownership Transfer", "Financial Endt", "RC, PA Declaration (written confirmation if customer wants to add or not), Aadhaar Card and Pan Card (New owner), New owner details and Proposal Form", "SRS / 10 Days", "Yes", "Yes", "", ""],
+["SBI", "NCB Correction (taken extra NCB)", "Financial Endt", "Aadhaar and Pan Card, Previous Year Policy, NCB Confirmation letter from pyp insurer", "SRS / 10 Days", "Yes", "Yes", "", ""],
+["SBI", "NCB Correction (taken less NCB)", "Financial Endt", "Previous Year Policy, NCB Confirmation letter from pyp insurer", "SRS / 10 Days", "Refund", "Yes", "", ""],
+["SBI", "Top Up (PAYD plan)", "Not Possible", "Not Possible", "SRS / 10 Days", "", "", "", ""],
+["SBI", "Multiple Mismatch (Reg no. chassis no & Engine no mismatch)", "Not Possible", "Not Possible", "SRS / 10 Days", "", "", "", ""],
+["SBI", "Post Issuance Cancellation", "", "Aadhaar and Pan Card and Alternate policy", "", "Yes", "No", "an only be canceled if the period of insurance (POI) of the alternate policy is the same as the current policy.", ""],
+["TATA AIG", "Addition of GST No.", "Non Financial Endt", "GST Certificate in the name of Insured", "SRS / 10 Days", "No", "No", "", ""],
+["TATA AIG", "Chassis Number", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+["TATA AIG", "Colour Change", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+["TATA AIG", "Engine Number", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+["TATA AIG", "Hypothecation Remove", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+["TATA AIG", "Hypothecation Add", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+["TATA AIG", "Hypothecation Change", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+["TATA AIG", "Insured name", "Non Financial Endt", "RC, Aadhaar & Pan card, PYP", "SRS / 10 Days", "No", "No", "Proceed with O/t incase cx doesn't have PYP", ""],
+["TATA AIG", "NCB Certificate", "Financial Endt", "Sale Letter, PYP, NCB Confirmation letter", "SRS / 10 Days", "Yes", "No", "", ""],
+["TATA AIG", "Registration Date", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["TATA AIG", "Regst. Number", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "Maybe", "", ""],
+["TATA AIG", "RTO Endorsement", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["TATA AIG", "Seating Capacity", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["TATA AIG", "Period of Insurance (POI)", "Non Financial Endt", "PYP", "SRS / 10 Days", "No", "No", "", ""],
+["TATA AIG", "PYP Details- POI or Insurer or Policy number", "Non Financial Endt", "PYP", "SRS / 10 Days", "No", "No", "", ""],
+["TATA AIG", "TP details", "Non Financial Endt", "TP Bundle Policy", "SRS / 10 Days", "No", "No", "", ""],
+["TATA AIG", "Communication Address", "Non Financial Endt", "Address Proof", "SRS / 10 Days", "No", "No", "", ""],
+["TATA AIG", "Date of Birth (DOB)", "Non Financial Endt", "DOB proof", "SRS / 10 Days", "No", "No", "", ""],
+["TATA AIG", "Email Address", "Non Financial Endt", "New Mail ID", "SRS / 10 Days", "No", "No", "", ""],
+["TATA AIG", "Mobile Number", "Non Financial Endt", "New Mobile Number", "SRS / 10 Days", "No", "No", "", ""],
+["TATA AIG", "Nominee Details", "Non Financial Endt", "Nominee details", "SRS / 10 Days", "No", "No", "", ""],
+["TATA AIG", "Salutation", "Non Financial Endt", "Correct Salutation", "SRS / 10 Days", "No", "No", "", ""],
+["TATA AIG", "Owner Driver Personal Accident", "Financial Endt", "RC, DL and Nominee details", "SRS / 10 Days", "Yes", "No", "", ""],
+["TATA AIG", "Paid Driver", "Financial Endt", "DL, 3 months Salary slip of driver.", "SRS / 10 Days", "Yes", "No", "", ""],
+["TATA AIG", "Un Named Passanger Cover", "Financial Endt", "RC Copy along with confirmation of 1Lac/2Lacs per seat coverage addition.", "SRS / 10 Days", "Yes", "No", "", ""],
+["TATA AIG", "CNG Addition External", "Financial Endt", "RC, CNG Invoice/PYP", "SRS / 10 Days", "Yes", "Yes", "", ""],
+["TATA AIG", "CNG Addition Company fitted", "Financial Endt", "RC, PYP", "SRS / 10 Days", "Yes", "Yes", "", ""],
+["TATA AIG", "Cubic Capacity (CC)", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["TATA AIG", "Fuel Type (Petrol - Diesel/Diesel - petrol)", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["TATA AIG", "IDV Change", "Not Possible", "", "SRS / 10 Days", "", "", "", ""],
+["TATA AIG", "Manufactured Date", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["TATA AIG", "Make/Model/Variant", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+["TATA AIG", "Ownership Transfer", "Financial Endt", "RC, Aadhaar Card and Pan Card (New owner), New owner details.", "SRS / 10 Days", "Yes", "Yes", "", ""],
+["TATA AIG", "NCB Correction (taken extra NCB)", "Financial Endt", "Previous Year Policy, NCB Confirmation letter from pyp insurer", "SRS / 10 Days", "Yes", "Yes", "", ""],
+["TATA AIG", "NCB Correction (taken less NCB)", "Financial Endt", "Previous Year Policy, NCB Confirmation letter from pyp insurer", "SRS / 10 Days", "Refund", "Yes", "", ""],
+["TATA AIG", "Top Up (PAYD plan)", "Not Possible", "", "SRS / 10 Days", "", "", "", ""],
+["TATA AIG", "Multiple Mismatch (Reg no. chassis no & Engine no mismatch)", "Not Possible", "", "SRS / 10 Days", "", "", "", ""],
+["TATA AIG", "Post Issuance Cancellation", "", "Alternate and Written consent from Customer", "SRS / 10 Days", "Yes", "No", "", ""],
+["United", "Addition of GST No.", "Non Financial Endt", "GST Certificate in the name of Insured", "SRS / 10 Days", "No", "No", "", ""],
+["United", "Chassis Number", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "Correction possible after policy start date", ""],
+["United", "Colour Change", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "Correction possible after policy start date", ""],
+["United", "Engine Number", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "Correction possible after policy start date", ""],
+["United", "Hypothecation Remove", "Self Endt", "RC and Loan letter", "SRS / 10 Days", "No", "No", "Correction possible after policy start date", ""],
+["United", "Hypothecation Add", "Self Endt", "RC and Loan letter", "SRS / 10 Days", "No", "No", "Correction possible after policy start date", ""],
+["United", "Hypothecation Change", "Self Endt", "RC and Loan letter", "SRS / 10 Days", "No", "No", "Correction possible after policy start date", ""],
+["United", "Insured name", "Self Endt", "RC and PYP", "SRS / 10 Days", "No", "No", "Correction possible after policy start date", ""],
+["United", "NCB Certificate", "Financial Endt", "Sale Letter, PYP, NCB Confirmation letter", "SRS / 10 Days", "Yes", "No", "Correction possible after policy start date", ""],
+["United", "Registration Date", "Financial Endt", "RC", "SRS / 10 Days", "Yes", "No", "Correction possible after policy start date", ""],
+["United", "Regst. Number", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "Maybe", "Correction possible after policy start date", ""],
+["United", "RTO Endorsement", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "Correction possible after policy start date", ""],
+["United", "Seating Capacity", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "Correction possible after policy start date", ""],
+["United", "Period of Insurance (POI)", "Non Financial Endt", "PYP", "SRS / 10 Days", "No", "No", "", ""],
+["United", "PYP Details- POI or Insurer or Policy number", "Non Financial Endt", "PYP", "SRS / 10 Days", "No", "No", "Correction possible after policy start date", ""],
+["United", "TP details", "Non Financial Endt", "TP Bundle Policy", "SRS / 10 Days", "No", "No", "Correction possible after policy start date", ""],
+["United", "Communication Address", "Nil Endt", "New Address with pincode", "SRS / 10 Days", "No", "No", "", ""],
+["United", "Date of Birth (DOB)", "Non Financial Endt", "DOB proof", "SRS / 10 Days", "No", "No", "Correction possible after policy start date", ""],
+["United", "Email Address", "Nil Endt", "New Mail ID", "SRS / 10 Days", "No", "No", "", ""],
+["United", "Mobile Number", "Nil Endt", "New Mobile Number", "SRS / 10 Days", "No", "No", "", ""],
+["United", "Nominee Details", "Nil Endt", "Nominee details", "SRS / 10 Days", "No", "No", "", ""],
+["United", "Salutation", "Nil Endt", "Salutation details", "SRS / 10 Days", "No", "No", "", ""],
+["United", "Owner Driver Personal Accident", "Not Possible", "Not possible", "SRS / 10 Days", "", "", "", ""],
+["United", "Paid Driver", "Not Possible", "Not possible", "SRS / 10 Days", "", "", "", ""],
+["United", "Un Named Passanger Cover", "Not Possible", "Not possible", "SRS / 10 Days", "", "", "", ""],
+["United", "CNG Addition External", "Financial Endt", "RC, CNG Invoice", "SRS / 10 Days", "Yes", "Yes", "Correction possible after policy start date", ""],
+["United", "CNG Addition Company fitted", "Financial Endt", "RC, PYP", "SRS / 10 Days", "Yes", "Yes", "Correction possible after policy start date", ""],
+["United", "Cubic Capacity (CC)", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "Correction possible after policy start date", ""],
+["United", "Fuel Type (Petrol - Diesel/Diesel - petrol)", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "Correction possible after policy start date", ""],
+["United", "IDV Change", "Not Possible", "Not possible", "SRS / 10 Days", "", "", "", ""],
+["United", "Manufactured Date", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "Correction possible after policy start date", ""],
+["United", "Make/Model/Variant", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "Correction possible after policy start date", ""],
+["United", "Ownership Transfer", "Financial Endt", "RC and New owner details.", "SRS / 10 Days", "Yes", "Yes", "Correction possible after policy start date", ""],
+["United", "NCB Correction (taken extra NCB)", "Financial Endt", "Previous Year Policy, NCB Confirmation letter from pyp insurer", "SRS / 10 Days", "Yes", "Yes", "Correction possible after policy start date", ""],
+["United", "NCB Correction (taken less NCB)", "Financial Endt", "Previous Year Policy, NCB Confirmation letter from pyp insurer", "SRS / 10 Days", "Refund", "Yes", "Correction possible after policy start date", ""],
+["United", "Top Up (PAYD plan)", "Not Possible", "Not Possible", "SRS / 10 Days", "", "", "", ""],
+["United", "Multiple Mismatch (Reg no. chassis no & Engine no mismatch)", "Not Possible", "Not Possible", "SRS / 10 Days", "", "", "", ""],
+["United", "Post Issuance Cancellation", "", "Alternate and Written Declaration from Customer", "SRS / 10 Days", "Yes", "No", "Policy starting from later date will be cancelled", ""],
+        ["New India Assurance", "Addition of GST No.", "Non Financial Endt", "GST Certificate in the name of Insured", "SRS / 10 Days", "No", "No", "", ""],
+        ["New India Assurance", "Chassis Number", "Self Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+        ["New India Assurance", "Colour Change", "Self Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+        ["New India Assurance", "Engine Number", "Self Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+        ["New India Assurance", "Hypothecation Remove", "Self Endt", "RC, NOC", "SRS / 10 Days", "No", "No", "", ""],
+        ["New India Assurance", "Hypothecation Add", "Self Endt", "Updated RC or Loan sanction letter", "SRS / 10 Days", "No", "No", "", ""],
+        ["New India Assurance", "Hypothecation Change", "Self Endt", "Updated RC or NOC", "SRS / 10 Days", "No", "No", "", ""],
+        ["New India Assurance", "Insured name", "Non Financial Endt", "RC, PYP, KYC", "SRS / 10 Days", "No", "No", "Proceed with O/t incase cx doesn't have PYP", ""],
+        ["New India Assurance", "NCB Certificate", "Financial Endt", "Sale letter or new vehicle invoice, PYP, NCB Confirmation letter", "SRS / 10 Days", "Yes", "No", "", "Sample declaration- We request to kindly confirm whether you want to cancel the Own damage part of the policy or want to recover the ncb."],
+        ["New India Assurance", "Registration Date", "Self Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+        ["New India Assurance", "Regst. Number", "Self Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+        ["New India Assurance", "RTO Endorsement", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+        ["New India Assurance", "Seating Capacity", "Self Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+        ["New India Assurance", "Period of Insurance (POI)", "Not Possible", "", "SRS / 10 Days", "No", "No", "", ""],
+        ["New India Assurance", "PYP Details- POI or Insurer or Policy number", "Self Endt", "PYP", "SRS / 10 Days", "No", "No", "", ""],
+        ["New India Assurance", "TP details", "Self Endt", "Bundled TP or PYP", "SRS / 10 Days", "No", "No", "", ""],
+        ["New India Assurance", "Communication Address", "Nil Endt", "Complete address with pincode", "SRS / 10 Days", "No", "No", "", ""],
+        ["New India Assurance", "Date of Birth (DOB)", "Not Possible", "", "SRS / 10 Days", "No", "No", "", ""],
+        ["New India Assurance", "Email Address", "Nil Endt", "Complete Email ID", "SRS / 10 Days", "No", "No", "", ""],
+        ["New India Assurance", "Mobile Number", "Nil Endt", "Mobile Number", "SRS / 10 Days", "No", "No", "", ""],
+        ["New India Assurance", "Nominee Details", "Nil Endt", "Nominee Details", "SRS / 10 Days", "No", "No", "", ""],
+        ["New India Assurance", "Salutation", "Nil Endt", "Correct salutation", "SRS / 10 Days", "No", "No", "", ""],
+        ["New India Assurance", "Owner Driver Personal Accident", "Not Possible", "", "SRS / 10 Days", "Yes", "No", "", ""],
+        ["New India Assurance", "Paid Driver", "Not Possible", "", "SRS / 10 Days", "Yes", "No", "", ""],
+        ["New India Assurance", "Un Named Passanger Cover", "Not Possible", "", "SRS / 10 Days", "Yes", "No", "", ""],
+        ["New India Assurance", "CNG Addition External", "Financial Endt", "RC, CNG Invoice", "SRS / 10 Days", "Yes", "Yes", "", ""],
+        ["New India Assurance", "CNG Addition Company fitted", "Financial Endt", "RC, PYP", "SRS / 10 Days", "Yes", "Yes", "", ""],
+        ["New India Assurance", "Cubic Capacity (CC)", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+        ["New India Assurance", "Fuel Type (Petrol - Diesel/Diesel - petrol)", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "Maybe", "", ""],
+        ["New India Assurance", "IDV Change", "Not Possible", "", "SRS / 10 Days", "No", "No", "", ""],
+        ["New India Assurance", "Manufactured Date", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+        ["New India Assurance", "Make/Model/Variant", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+        ["New India Assurance", "Ownership Transfer", "Financial Endt", "RC, New owner details, KYC", "SRS / 10 Days", "Yes", "Yes", "", ""],
+        ["New India Assurance", "NCB Correction (taken extra NCB)", "Financial Endt", "PYP, NCB Confirmation", "SRS / 10 Days", "Yes", "Yes", "", ""],
+        ["New India Assurance", "NCB Correction (taken less NCB)", "Financial Endt", "PYP, NCB Confirmation", "SRS / 10 Days", "Refund", "Yes", "", ""],
+        ["New India Assurance", "Top Up (PAYD plan)", "Not Possible", "", "SRS / 10 Days", "No", "No", "", ""],
+        ["New India Assurance", "Multiple Mismatch (Reg no. chassis no & Engine no mismatch)", "Non Financial Endt", "RC,KYC,PYP, Proposal Form & Bank statement with payee name", "SRS / 10 Days", "No", "No", "", ""],
+        ["New India Assurance", "Post Issuance Cancellation", "", "Alternate Policy", "SRS / 10 Days", "Deduction", "", "", ""],
+        ["Future Generali", "Addition of GST No.", "Non Financial Endt", "GST Certificate in the name of Insured", "SRS / 10 Days", "No", "No", "Raise endorsement with XML sheet", ""],
+        ["Future Generali", "Chassis Number", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "Raise endorsement with XML sheet", ""],
+        ["Future Generali", "Colour Change", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "Raise endorsement with XML sheet", ""],
+        ["Future Generali", "Engine Number", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "Raise endorsement with XML sheet", ""],
+        ["Future Generali", "Hypothecation Remove", "Non Financial Endt", "RC, NOC", "SRS / 10 Days", "No", "No", "Raise endorsement with XML sheet", ""],
+        ["Future Generali", "Hypothecation Add", "Non Financial Endt", "Updated RC or Loan sanction letter,", "SRS / 10 Days", "No", "No", "Raise endorsement with XML sheet", ""],
+        ["Future Generali", "Hypothecation Change", "Non Financial Endt", "Updated RC or NOC", "SRS / 10 Days", "No", "No", "Raise endorsement with XML sheet", ""],
+        ["Future Generali", "Insured name", "Non Financial Endt", "RC, PYP, KYC", "SRS / 10 Days", "No", "No", "Raise endorsement with XML sheet + Proceed with O/t incase cx doesn't have PYP", ""],
+        ["Future Generali", "NCB Certificate", "Financial Endt", "Sale letter or new vehicle invoice, PYP, NCB Confirmation letter", "SRS / 10 Days", "Yes", "No", "Raise endorsement with XML sheet", "Sample declaration- We request to kindly confirm whether you want to cancel the Own damage part of the policy or want to recover the ncb."],
+        ["Future Generali", "Registration Date", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "Raise endorsement with XML sheet", ""],
+        ["Future Generali", "Regst. Number", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "Raise endorsement with XML sheet", ""],
+        ["Future Generali", "RTO Endorsement", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "Raise endorsement with XML sheet", ""],
+        ["Future Generali", "Seating Capacity", "Financial Endt", "RC", "SRS / 10 Days", "No", "No", "Raise endorsement with XML sheet", ""],
+        ["Future Generali", "Period of Insurance (POI)", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "Raise endorsement with XML sheet", ""],
+        ["Future Generali", "PYP Details- POI or Insurer or Policy number", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "Raise endorsement with XML sheet", ""],
+        ["Future Generali", "TP details", "Non Financial Endt", "Bundled TP or PYP", "SRS / 10 Days", "No", "No", "Raise endorsement with XML sheet", ""],
+        ["Future Generali", "Communication Address", "Non Financial Endt", "Complete address with pincode", "SRS / 10 Days", "No", "No", "", ""],
+        ["Future Generali", "Date of Birth (DOB)", "Not Possible", "", "SRS / 10 Days", "No", "No", "", ""],
+        ["Future Generali", "Email Address", "Non Financial Endt", "Complete Email ID", "SRS / 10 Days", "No", "No", "", ""],
+        ["Future Generali", "Mobile Number", "Non Financial Endt", "Mobile Number", "SRS / 10 Days", "No", "No", "", ""],
+        ["Future Generali", "Nominee Details", "Non Financial Endt", "Nominee Details", "SRS / 10 Days", "No", "No", "", ""],
+        ["Future Generali", "Salutation", "Non Financial Endt", "Correct salutation", "SRS / 10 Days", "No", "No", "", ""],
+        ["Future Generali", "Owner Driver Personal Accident", "Financial Endt", "RC, DL, Nominee Details", "SRS / 10 Days", "Yes", "No", "Raise endorsement with XML sheet", ""],
+        ["Future Generali", "Paid Driver", "Financial Endt", "RC, Salary slip of last 3 months, DL of the driver", "SRS / 10 Days", "Yes", "No", "Raise endorsement with XML sheet", ""],
+        ["Future Generali", "Un Named Passanger Cover", "Financial Endt", "RC, written confirmation of coverage for Rs.50 - 1L and Rs.100/- 2L", "SRS / 10 Days", "Yes", "No", "Raise endorsement with XML sheet", ""],
+        ["Future Generali", "CNG Addition External", "Financial Endt", "RC, CNG Invoice", "SRS / 10 Days", "Yes", "Yes", "Raise endorsement with XML sheet", ""],
+        ["Future Generali", "CNG Addition Company fitted", "Financial Endt", "RC, PYP", "SRS / 10 Days", "Yes", "Yes", "Raise endorsement with XML sheet", ""],
+        ["Future Generali", "Cubic Capacity (CC)", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "Raise endorsement with XML sheet", ""],
+        ["Future Generali", "Fuel Type (Petrol - Diesel/Diesel - petrol)", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "Maybe", "Raise endorsement with XML sheet", ""],
+        ["Future Generali", "IDV Change", "Not Possible", "", "SRS / 10 Days", "No", "", "", ""],
+        ["Future Generali", "Manufactured Date", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "Maybe", "Raise endorsement with XML sheet", ""],
+        ["Future Generali", "Make/Model/Variant", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "Maybe", "Raise endorsement with XML sheet", ""],
+        ["Future Generali", "Ownership Transfer", "Financial Endt", "RC, New owner details, KYC, Proposal form, NOC", "SRS / 10 Days", "Yes", "Yes", "Raise endorsement with XML sheet", ""],
+        ["Future Generali", "NCB Correction (taken extra NCB)", "Financial Endt", "PYP, NCB Confirmation", "SRS / 10 Days", "Yes", "No", "Raise endorsement with XML sheet", ""],
+        ["Future Generali", "NCB Correction (taken less NCB)", "Financial Endt", "PYP, NCB Confirmation", "SRS / 10 Days", "No", "No", "Raise endorsement with XML sheet", ""],
+        ["Future Generali", "Top Up (PAYD plan)", "Not Possible", "", "SRS / 10 Days", "No", "No", "", ""],
+        ["Future Generali", "Multiple Mismatch (Reg no. chassis no & Engine no mismatch)", "Not Possible", "", "SRS / 10 Days", "No", "No", "OD Part could be cancelled with deduction in comprehensive policy", ""],
+        ["Future Generali", "Post Issuance Cancellation", "", "Alternate Policy", "SRS / 10 Days", "Yes", "", "Raised cancellation with XML Sheet", ""],
+        ["Iffco tokio", "Addition of GST No.", "Non Financial Endt", "GST Certificate in the name of Insured, KYC", "SRS / 10 Days", "No", "No", "", ""],
+        ["Iffco tokio", "Chassis Number", "Self Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+        ["Iffco tokio", "Colour Change", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+        ["Iffco tokio", "Engine Number", "Self Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+        ["Iffco tokio", "Hypothecation Remove", "Non Financial Endt", "RC, NOC", "SRS / 10 Days", "No", "No", "", ""],
+        ["Iffco tokio", "Hypothecation Add", "Non Financial Endt", "Updated RC or Loan sanction letter", "SRS / 10 Days", "No", "No", "", ""],
+        ["Iffco tokio", "Hypothecation Change", "Non Financial Endt", "Updated RC or NOC", "SRS / 10 Days", "No", "No", "", ""],
+        ["Iffco tokio", "Insured name", "Self Endt", "RC, PYP, KYC", "SRS / 10 Days", "No", "No", "correction can be done Post start date of the policy + Proceed with O/t incase cx doesn't have PYP", ""],
+        ["Iffco tokio", "NCB Certificate", "Financial Endt", "Sale letter, PYP, NCB Confirmation letter", "SRS / 10 Days", "Yes", "No", "", "Sample declaration- We request to kindly confirm whether you want to cancel the Own damage part of the policy or want to recover the ncb."],
+        ["Iffco tokio", "Registration Date", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+        ["Iffco tokio", "Regst. Number", "Self Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+        ["Iffco tokio", "RTO Endorsement", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+        ["Iffco tokio", "Seating Capacity", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+        ["Iffco tokio", "Period of Insurance (POI)", "Non Financial Endt", "PYP", "SRS / 10 Days", "No", "No", "", ""],
+        ["Iffco tokio", "PYP Details- POI or Insurer or Policy number", "Non Financial Endt", "PYP", "SRS / 10 Days", "No", "No", "", ""],
+        ["Iffco tokio", "TP details", "Non Financial Endt", "Bundled TP or PYP", "SRS / 10 Days", "No", "No", "", ""],
+        ["Iffco tokio", "Communication Address", "Nil Endt", "Address Proof", "SRS / 10 Days", "No", "No", "", ""],
+        ["Iffco tokio", "Date of Birth (DOB)", "Not Possible", "Complete address with pincode", "SRS / 10 Days", "No", "No", "", ""],
+        ["Iffco tokio", "Email Address", "Nil Endt", "", "SRS / 10 Days", "No", "No", "", ""],
+        ["Iffco tokio", "Mobile Number", "Nil Endt", "Complete Email ID", "SRS / 10 Days", "No", "No", "", ""],
+        ["Iffco tokio", "Nominee Details", "Nil Endt", "Mobile Number", "SRS / 10 Days", "No", "No", "", ""],
+        ["Iffco tokio", "Salutation", "Nil Endt", "Nominee Details", "SRS / 10 Days", "No", "No", "", ""],
+        ["Iffco tokio", "Owner Driver Personal Accident", "Financial Endt", "Correct salutation", "SRS / 10 Days", "Yes", "No", "", ""],
+        ["Iffco tokio", "Paid Driver", "Financial Endt", "RC, Salary slip of last 3 months, DL of the driver", "SRS / 10 Days", "Yes", "No", "", ""],
+        ["Iffco tokio", "Un Named Passanger Cover", "Financial Endt", "RC, written confirmation of coverage for Rs.50 - 1L and Rs.100/- 2L", "SRS / 10 Days", "Yes", "No", "", ""],
+        ["Iffco tokio", "CNG Addition External", "Financial Endt", "RC, CNG Invoice", "SRS / 10 Days", "Yes", "Yes", "", ""],
+        ["Iffco tokio", "CNG Addition Company fitted", "Financial Endt", "RC, PYP", "SRS / 10 Days", "Yes", "Yes", "", ""],
+        ["Iffco tokio", "Cubic Capacity (CC)", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+        ["Iffco tokio", "Fuel Type (Petrol - Diesel/Diesel - petrol)", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "Maybe", "", ""],
+        ["Iffco tokio", "IDV Change", "Not Possible", "", "SRS / 10 Days", "No", "No", "", ""],
+        ["Iffco tokio", "Manufactured Date", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+        ["Iffco tokio", "Make/Model/Variant", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+        ["Iffco tokio", "Ownership Transfer", "Financial Endt", "RC, New owner details, KYC", "SRS / 10 Days", "Yes", "Yes", "correction can be done Post start date of the policy", ""],
+        ["Iffco tokio", "NCB Correction (taken extra NCB)", "Financial Endt", "PYP, NCB Confirmation", "SRS / 10 Days", "Yes", "No", "", ""],
+        ["Iffco tokio", "NCB Correction (taken less NCB)", "Financial Endt", "PYP, NCB Confirmation", "SRS / 10 Days", "No", "No", "", ""],
+        ["Iffco tokio", "Top Up (PAYD plan)", "Not Possible", "", "SRS / 10 Days", "No", "No", "", ""],
+        ["Iffco tokio", "Multiple Mismatch (Reg no. chassis no & Engine no mismatch)", "Not Possible", "", "SRS / 10 Days", "No", "No", "OD Part could be cancelled with deduction in comprehensive policy", ""],
+        ["Iffco tokio", "Post Issuance Cancellation", "", "Alternate Policy", "SRS / 10 Days", "Yes", "", "", ""],
+        ["Magma", "Addition of GST No.", "Non Financial Endt", "GST Certificate in the name of Insured, KYC", "SRS / 10 Days", "No", "No", "", "Customer request only"],
+        ["Magma", "Chassis Number", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", "Customer request only"],
+        ["Magma", "Colour Change", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", "Customer request only"],
+        ["Magma", "Engine Number", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", "Customer request only"],
+        ["Magma", "Hypothecation Remove", "Non Financial Endt", "RC, NOC", "SRS / 10 Days", "No", "No", "", "Customer request only"],
+        ["Magma", "Hypothecation Add", "Self Endt", "Updated RC or Loan sanction letter", "SRS / 10 Days", "No", "No", "", "Customer request only"],
+        ["Magma", "Hypothecation Change", "Non Financial Endt", "Updated RC or NOC", "SRS / 10 Days", "No", "No", "", "Customer request only"],
+        ["Magma", "Insured name", "Self Endt", "RC, PYP, KYC", "SRS / 10 Days", "No", "No", "Proceed with O/t incase cx doesn't have PYP", "Customer request only"],
+        ["Magma", "NCB Certificate", "Financial Endt", "Sale letter, PYP, NCB Confirmation letter", "SRS / 10 Days", "Yes", "No", "", "Customer request only & Sample declaration- We request to kindly confirm whether you want to cancel the Own damage part of the policy or want to recover the ncb."],
+        ["Magma", "Registration Date", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", "Customer request only"],
+        ["Magma", "Regst. Number", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", "Customer request only"],
+        ["Magma", "RTO Endorsement", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", "Customer request only"],
+        ["Magma", "Seating Capacity", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", "Customer request only"],
+        ["Magma", "Period of Insurance (POI)", "Non Financial Endt", "PYP,KYC", "SRS / 10 Days", "No", "No", "", "Customer request only"],
+        ["Magma", "PYP Details- POI or Insurer or Policy number", "Non Financial Endt", "PYP", "SRS / 10 Days", "No", "No", "", "Customer request only"],
+        ["Magma", "TP details", "Non Financial Endt", "Bundled TP", "SRS / 10 Days", "No", "No", "", "Customer request only"],
+        ["Magma", "Communication Address", "Nil Endt", "Complete address with pincode", "SRS / 10 Days", "No", "No", "", "Customer request only"],
+        ["Magma", "Date of Birth (DOB)", "Not Possible", "", "SRS / 10 Days", "No", "No", "", "Customer request only"],
+        ["Magma", "Email Address", "Nil Endt", "Complete Email ID", "SRS / 10 Days", "No", "No", "", "Customer request only"],
+        ["Magma", "Mobile Number", "Nil Endt", "Mobile Number", "SRS / 10 Days", "No", "No", "", "Customer request only"],
+        ["Magma", "Nominee Details", "Nil Endt", "Nominee Details", "SRS / 10 Days", "No", "No", "", "Customer request only"],
+        ["Magma", "Salutation", "Nil Endt", "Correct salutation", "SRS / 10 Days", "No", "No", "", "Customer request only"],
+        ["Magma", "Owner Driver Personal Accident", "Financial Endt", "RC, DL, Nominee Details", "SRS / 10 Days", "Yes", "No", "", "Customer request only"],
+        ["Magma", "Paid Driver", "Financial Endt", "RC, Salary slip of last 3 months, DL of the driver", "SRS / 10 Days", "Yes", "No", "", "Customer request only"],
+        ["Magma", "Un Named Passanger Cover", "Financial Endt", "RC, written confirmation of coverage for Rs.50 - 1L and Rs.100/- 2L", "SRS / 10 Days", "Yes", "No", "", "Customer request only"],
+        ["Magma", "CNG Addition External", "Financial Endt", "RC, CNG Invoice", "SRS / 10 Days", "Yes", "Yes", "", "Customer request only"],
+        ["Magma", "CNG Addition Company fitted", "Financial Endt", "RC, PYP", "SRS / 10 Days", "Yes", "Yes", "", "Customer request only"],
+        ["Magma", "Cubic Capacity (CC)", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", "Customer request only"],
+        ["Magma", "Fuel Type (Petrol - Diesel/Diesel - petrol)", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "Maybe", "", "Customer request only"],
+        ["Magma", "IDV Change", "Not Possible", "", "SRS / 10 Days", "No", "No", "", "Customer request only"],
+        ["Magma", "Manufactured Date", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", "Customer request only"],
+        ["Magma", "Make/Model/Variant", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "Maybe", "", "Customer request only"],
+        ["Magma", "Ownership Transfer", "Financial Endt", "RC, New owner details, KYC", "SRS / 10 Days", "Yes", "Yes", "", "Customer request only"],
+        ["Magma", "NCB Correction (taken extra NCB)", "Financial Endt", "PYP, NCB Confirmation", "SRS / 10 Days", "Yes", "Yes", "", "Customer request only"],
+        ["Magma", "NCB Correction (taken less NCB)", "Financial Endt", "PYP, NCB Confirmation", "SRS / 10 Days", "Refund", "Yes", "", "Customer request only"],
+        ["Magma", "Top Up (PAYD plan)", "Not Possible", "", "SRS / 10 Days", "No", "No", "", "Customer request only"],
+        ["Magma", "Multiple Mismatch (Reg no. chassis no & Engine no mismatch)", "Not Possible", "", "SRS / 10 Days", "No", "No", "OD Part could be cancelled with deduction in comprehensive policy", "Customer request only"],
+        ["Magma", "Post Issuance Cancellation", "", "Alternate Policy, KYC", "SRS / 10 Days", "Yes", "", "", ""],
+        ["Raheja", "Addition of GST No.", "Non Financial Endt", "GST Certificate in the name of Insured, KYC", "SRS / 10 Days", "No", "No", "PAN Card mandate in KYC", "Customer request"],
+        ["Raheja", "Chassis Number", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", "Customer request"],
+        ["Raheja", "Colour Change", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", "Customer request"],
+        ["Raheja", "Engine Number", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", "Customer request"],
+        ["Raheja", "Hypothecation Remove", "Non Financial Endt", "RC, NOC", "SRS / 10 Days", "No", "No", "", "Customer request"],
+        ["Raheja", "Hypothecation Add", "Non Financial Endt", "Updated RC or Loan sanction letter", "SRS / 10 Days", "No", "No", "", "Customer request"],
+        ["Raheja", "Hypothecation Change", "Non Financial Endt", "Updated RC or NOC", "SRS / 10 Days", "No", "No", "", "Customer request"],
+        ["Raheja", "Insured name", "Non Financial Endt", "RC, PYP, KYC", "SRS / 10 Days", "No", "No", "PAN Card mandate in KYC + Proceed with O/t incase cx doesn't have PYP", "Customer request"],
+        ["Raheja", "NCB Certificate", "Financial Endt", "Sale letter, PYP, NCB Confirmation letter", "SRS / 10 Days", "Yes", "Maybe", "", "Customer request & Sample declaration- We request to kindly confirm whether you want to cancel the Own damage part of the policy or want to recover the ncb."],
+        ["Raheja", "Registration Date", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", "Customer request"],
+        ["Raheja", "Regst. Number", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", "Customer request"],
+        ["Raheja", "RTO Endorsement", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", "Customer request"],
+        ["Raheja", "Seating Capacity", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", "Customer request"],
+        ["Raheja", "Period of Insurance (POI)", "Non Financial Endt", "PYP", "SRS / 10 Days", "No", "No", "", "Customer request, Cancellation & rebook declaration"],
+        ["Raheja", "PYP Details- POI or Insurer or Policy number", "Non Financial Endt", "PYP", "SRS / 10 Days", "No", "No", "", "Customer request"],
+        ["Raheja", "TP details", "Non Financial Endt", "Bundled TP", "SRS / 10 Days", "No", "No", "", "Customer request"],
+        ["Raheja", "Communication Address", "Non Financial Endt", "Address Proof", "SRS / 10 Days", "No", "No", "", "Customer request"],
+        ["Raheja", "Date of Birth (DOB)", "Not Possible", "Complete address with pincode", "SRS / 10 Days", "No", "No", "", "Customer request"],
+        ["Raheja", "Email Address", "Non Financial Endt", "", "SRS / 10 Days", "No", "No", "", "Customer request"],
+        ["Raheja", "Mobile Number", "Non Financial Endt", "Complete Email ID", "SRS / 10 Days", "No", "No", "", "Customer request"],
+        ["Raheja", "Nominee Details", "Non Financial Endt", "Mobile Number", "SRS / 10 Days", "No", "No", "", "Customer request"],
+        ["Raheja", "Salutation", "Non Financial Endt", "Nominee Details", "SRS / 10 Days", "No", "No", "", "Customer request"],
+        ["Raheja", "Owner Driver Personal Accident", "Financial Endt", "Correct salutation", "SRS / 10 Days", "Yes", "No", "", "Customer request"],
+        ["Raheja", "Paid Driver", "Financial Endt", "RC, Salary slip of last 3 months, DL of the driver", "SRS / 10 Days", "Yes", "No", "", "Customer request"],
+        ["Raheja", "Un Named Passanger Cover", "Financial Endt", "RC, written confirmation of coverage for Rs.50 - 1L and Rs.100/- 2L", "SRS / 10 Days", "Yes", "No", "", "Customer request"],
+        ["Raheja", "CNG Addition External", "Financial Endt", "RC, CNG Invoice", "SRS / 10 Days", "Yes", "Yes", "", "Customer request"],
+        ["Raheja", "CNG Addition Company fitted", "Financial Endt", "RC, PYP", "SRS / 10 Days", "Yes", "Yes", "", "Customer request"],
+        ["Raheja", "Cubic Capacity (CC)", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "Maybe", "", "Customer request"],
+        ["Raheja", "Fuel Type (Petrol - Diesel/Diesel - petrol)", "Financial Endt", "RC", "SRS / 10 Days", "Yes", "Yes", "", "Customer request"],
+        ["Raheja", "IDV Change", "Not Possible", "", "SRS / 10 Days", "No", "No", "", "Customer request"],
+        ["Raheja", "Manufactured Date", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", "Customer request"],
+        ["Raheja", "Make/Model/Variant", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "Maybe", "", "Customer request"],
+        ["Raheja", "Ownership Transfer", "Financial Endt", "RC, New owner details, KYC", "SRS / 10 Days", "Yes", "No", "PAN Card mandate in KYC", "Customer request, CPA declartion (Insurer form), new owner declaration"],
+        ["Raheja", "NCB Correction (taken extra NCB)", "Financial Endt", "PYP, NCB Confirmation", "SRS / 10 Days", "Yes", "Yes", "", "Customer request"],
+        ["Raheja", "NCB Correction (taken less NCB)", "Financial Endt", "PYP, NCB Confirmation", "SRS / 10 Days", "Refund", "Yes", "", "Customer request"],
+        ["Raheja", "Top Up (PAYD plan)", "Not Possible", "", "SRS / 10 Days", "No", "No", "", "Customer request"],
+        ["Raheja", "Multiple Mismatch (Reg no. chassis no & Engine no mismatch)", "Not Possible", "", "SRS / 10 Days", "No", "No", "OD Part could be cancelled with deduction in comprehensive policy", "Customer request"],
+        ["Raheja", "Post Issuance Cancellation", "", "Alternate Policy, KYC", "SRS / 10 Days", "Yes", "", "KYC required in pre rejected cases only, PAN Card mandate in KYC", "Customer request"],
+        ["Royal Sundaram", "Addition of GST No.", "Non Financial Endt", "GST Certificate in the name of Insured", "SRS / 10 Days", "No", "No", "", ""],
+        ["Royal Sundaram", "Chassis Number", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+        ["Royal Sundaram", "Colour Change", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+        ["Royal Sundaram", "Engine Number", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "", ""],
+        ["Royal Sundaram", "Hypothecation Remove", "Non Financial Endt", "RC, NOC", "SRS / 10 Days", "No", "No", "", ""],
+        ["Royal Sundaram", "Hypothecation Add", "Non Financial Endt", "Updated RC or Loan sanction letter", "SRS / 10 Days", "No", "No", "", ""],
+        ["Royal Sundaram", "Hypothecation Change", "Non Financial Endt", "Updated RC or NOC", "SRS / 10 Days", "No", "No", "", ""],
+        ["Royal Sundaram", "Insured name", "Non Financial Endt", "RC, PYP, KYC", "SRS / 10 Days", "No", "No", "Proceed with O/t incase cx doesn't have PYP", ""],
+        ["Royal Sundaram", "NCB Certificate", "Financial Endt", "Sale letter, PYP, NCB Confirmation letter", "SRS / 10 Days", "Yes", "No", "", "Sample declaration- We request to kindly confirm whether you want to cancel the Own damage part of the policy or want to recover the ncb."],
+        ["Royal Sundaram", "Registration Date", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+        ["Royal Sundaram", "Regst. Number", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+        ["Royal Sundaram", "RTO Endorsement", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+        ["Royal Sundaram", "Seating Capacity", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+        ["Royal Sundaram", "Period of Insurance (POI)", "Non Financial Endt", "PYP", "SRS / 10 Days", "No", "No", "", ""],
+        ["Royal Sundaram", "PYP Details- POI or Insurer or Policy number", "Non Financial Endt", "PYP", "SRS / 10 Days", "No", "No", "", ""],
+        ["Royal Sundaram", "TP details", "Non Financial Endt", "Bundled TP", "SRS / 10 Days", "No", "No", "", ""],
+        ["Royal Sundaram", "Communication Address", "Non Financial Endt", "Complete address with pincode", "SRS / 10 Days", "No", "No", "", ""],
+        ["Royal Sundaram", "Date of Birth (DOB)", "Not Possible", "", "SRS / 10 Days", "No", "No", "", ""],
+        ["Royal Sundaram", "Email Address", "Non Financial Endt", "Complete Email ID", "SRS / 10 Days", "No", "No", "", ""],
+        ["Royal Sundaram", "Mobile Number", "Non Financial Endt", "Mobile Number", "SRS / 10 Days", "No", "No", "", ""],
+        ["Royal Sundaram", "Nominee Details", "Non Financial Endt", "Nominee Details", "SRS / 10 Days", "No", "No", "", ""],
+        ["Royal Sundaram", "Salutation", "Non Financial Endt", "Correct salutation", "SRS / 10 Days", "No", "No", "", ""],
+        ["Royal Sundaram", "Owner Driver Personal Accident", "Financial Endt", "RC, DL, Nominee Details", "SRS / 10 Days", "Yes", "No", "Addition possible Before policy Start Date", ""],
+        ["Royal Sundaram", "Paid Driver", "Financial Endt", "RC, Salary slip of last 3 months, DL of the driver", "SRS / 10 Days", "Yes", "No", "Addition possible Before policy Start Date", ""],
+        ["Royal Sundaram", "Un Named Passanger Cover", "Financial Endt", "RC, written confirmation of coverage for Rs.50 - 1L and Rs.100/- 2L", "SRS / 10 Days", "Yes", "No", "Addition possible Before policy Start Date", ""],
+        ["Royal Sundaram", "CNG Addition External", "Financial Endt", "RC, CNG Invoice", "SRS / 10 Days", "Yes", "Yes", "", ""],
+        ["Royal Sundaram", "CNG Addition Company fitted", "Financial Endt", "RC, PYP", "SRS / 10 Days", "Yes", "Yes", "", ""],
+        ["Royal Sundaram", "Cubic Capacity (CC)", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+        ["Royal Sundaram", "Fuel Type (Petrol - Diesel/Diesel - petrol)", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+        ["Royal Sundaram", "IDV Change", "Not Possible", "", "SRS / 10 Days", "No", "No", "", ""],
+        ["Royal Sundaram", "Manufactured Date", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+        ["Royal Sundaram", "Make/Model/Variant", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "", ""],
+        ["Royal Sundaram", "Ownership Transfer", "Financial Endt", "RC, New owner details, KYC", "SRS / 10 Days", "Yes", "Yes", "", ""],
+        ["Royal Sundaram", "NCB Correction (taken extra NCB)", "Financial Endt", "PYP, NCB Confirmation", "SRS / 10 Days", "Yes", "No", "", ""],
+        ["Royal Sundaram", "NCB Correction (taken less NCB)", "Financial Endt", "PYP, NCB Confirmation", "SRS / 10 Days", "Refund", "No", "", ""],
+        ["Royal Sundaram", "Top Up (PAYD plan)", "Not Possible", "", "SRS / 10 Days", "No", "No", "", ""],
+        ["Royal Sundaram", "Multiple Mismatch (Reg no. chassis no & Engine no mismatch)", "Not Possible", "", "SRS / 10 Days", "No", "No", "OD Part could be cancelled with deduction in comprehensive policy", ""],
+        ["Royal Sundaram", "Post Issuance Cancellation", "", "Alternate Policy", "SRS / 10 Days", "Yes", "", "", ""],
+        ["Zuno", "Addition of GST No.", "Non Financial Endt", "GST Certificate in the name of Insured", "SRS / 10 Days", "No", "No", "Feedfile required while raising the endorsement", ""],
+        ["Zuno", "Chassis Number", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "Feedfile required while raising the endorsement", ""],
+        ["Zuno", "Colour Change", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "Feedfile required while raising the endorsement", ""],
+        ["Zuno", "Engine Number", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "Feedfile required while raising the endorsement", ""],
+        ["Zuno", "Hypothecation Remove", "Non Financial Endt", "RC, NOC", "SRS / 10 Days", "No", "No", "Feedfile required while raising the endorsement", ""],
+        ["Zuno", "Hypothecation Add", "Non Financial Endt", "Updated RC or Loan sanction letter", "SRS / 10 Days", "No", "No", "Feedfile required while raising the endorsement", ""],
+        ["Zuno", "Hypothecation Change", "Non Financial Endt", "Updated RC or NOC", "SRS / 10 Days", "No", "No", "Feedfile required while raising the endorsement", ""],
+        ["Zuno", "Insured name", "Non Financial Endt", "RC, PYP, KYC", "SRS / 10 Days", "No", "No", "Feedfile required while raising the endorsement + Proceed with O/t incase cx doesn't have PYP", ""],
+        ["Zuno", "NCB Certificate", "Financial Endt", "Sale letter, PYP, NCB Confirmation letter", "SRS / 10 Days", "Yes", "No", "Feedfile required while raising the endorsement", "Sample declaration- We request to kindly confirm whether you want to cancel the Own damage part of the policy or want to recover the ncb."],
+        ["Zuno", "Registration Date", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "Feedfile required while raising the endorsement", ""],
+        ["Zuno", "Regst. Number", "Non Financial Endt", "RC", "SRS / 10 Days", "No", "No", "Feedfile required while raising the endorsement", ""],
+        ["Zuno", "RTO Endorsement", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "Feedfile required while raising the endorsement", ""],
+        ["Zuno", "Seating Capacity", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "Feedfile required while raising the endorsement", ""],
+        ["Zuno", "Period of Insurance (POI)", "Non Financial Endt", "PYP", "SRS / 10 Days", "No", "No", "Feedfile required while raising the endorsement", ""],
+        ["Zuno", "PYP Details- POI or Insurer or Policy number", "Non Financial Endt", "PYP", "SRS / 10 Days", "No", "No", "Feedfile required while raising the endorsement", ""],
+        ["Zuno", "TP details", "Non Financial Endt", "Bundled TP", "SRS / 10 Days", "No", "No", "Feedfile required while raising the endorsement", ""],
+        ["Zuno", "Communication Address", "Nil Endt", "Complete address with pincode", "SRS / 10 Days", "No", "No", "", ""],
+        ["Zuno", "Date of Birth (DOB)", "Not Possible", "", "SRS / 10 Days", "No", "No", "", ""],
+        ["Zuno", "Email Address", "Nil Endt", "Complete Email ID", "SRS / 10 Days", "No", "No", "", ""],
+        ["Zuno", "Mobile Number", "Nil Endt", "Mobile Number", "SRS / 10 Days", "No", "No", "", ""],
+        ["Zuno", "Nominee Details", "Nil Endt", "Nominee Details", "SRS / 10 Days", "No", "No", "", ""],
+        ["Zuno", "Salutation", "Nil Endt", "Correct salutation", "SRS / 10 Days", "No", "No", "", ""],
+        ["Zuno", "Owner Driver Personal Accident", "Financial Endt", "RC, DL, Nominee Details", "SRS / 10 Days", "Yes", "No", "Before Policy Start Date, Feedfile required while raising the endorsement", ""],
+        ["Zuno", "Paid Driver", "Financial Endt", "RC, Salary slip of last 3 months, DL of the driver", "SRS / 10 Days", "Yes", "No", "Before Policy Start Date, Feedfile required while raising the endorsement", ""],
+        ["Zuno", "Un Named Passanger Cover", "Financial Endt", "RC, written confirmation of coverage for Rs.50 - 1L and Rs.100/- 2L", "SRS / 10 Days", "Yes", "No", "Before Policy Start Date, Feedfile required while raising the endorsement", ""],
+        ["Zuno", "CNG Addition External", "Financial Endt", "RC, CNG Invoice", "SRS / 10 Days", "Yes", "Yes", "Feedfile required while raising the endorsement", ""],
+        ["Zuno", "CNG Addition Company fitted", "Financial Endt", "RC, PYP", "SRS / 10 Days", "Yes", "Yes", "Feedfile required while raising the endorsement", ""],
+        ["Zuno", "Cubic Capacity (CC)", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "Feedfile required while raising the endorsement", ""],
+        ["Zuno", "Fuel Type (Petrol - Diesel/Diesel - petrol)", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "Feedfile required while raising the endorsement", ""],
+        ["Zuno", "IDV Change", "Not Possible", "", "SRS / 10 Days", "No", "No", "", ""],
+        ["Zuno", "Manufactured Date", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "Feedfile required while raising the endorsement", ""],
+        ["Zuno", "Make/Model/Variant", "Financial Endt", "RC", "SRS / 10 Days", "Maybe", "No", "Feedfile required while raising the endorsement", ""],
+        ["Zuno", "Ownership Transfer", "Financial Endt", "RC, New owner details, KYC", "SRS / 10 Days", "Yes", "Yes", "Feedfile required while raising the endorsement", ""],
+        ["Zuno", "NCB Correction (taken extra NCB)", "Financial Endt", "PYP, NCB Confirmation", "SRS / 10 Days", "Yes", "Yes", "Feedfile required while raising the endorsement", ""],
+        ["Zuno", "NCB Correction (taken less NCB)", "Financial Endt", "PYP, NCB Confirmation", "SRS / 10 Days", "Refund", "Yes", "Feedfile required while raising the endorsement", ""],
+        ["Zuno", "Top Up (PAYD plan)", "Not Possible", "", "SRS / 10 Days", "No", "No", "", ""],
+        ["Zuno", "Multiple Mismatch (Reg no. chassis no & Engine no mismatch)", "Not Possible", "", "SRS / 10 Days", "No", "No", "OD Part could be cancelled with deduction in comprehensive policy", ""],
+        ["Zuno", "Post Issuance Cancellation", "", "Alternate Policy, KYC", "SRS / 10 Days", "Yes", "", "Feedfile required while raising the cancellation", ""]
+        ];
+
+        // Function to populate the dropdowns with unique values
+        function populateDropdowns() {
+            const insuranceCompanySelect = document.getElementById('insurance-company');
+            const amendmentTypeSelect = document.getElementById('amendment-type');
+
+            // Skip header row (index 0)
+            const insurers = new Set();
+            const requirements = new Set();
+
+            // Start from index 1 to skip header
+            for (let i = 1; i < insuranceData.length; i++) {
+                insurers.add(insuranceData[i][0]);
+                requirements.add(insuranceData[i][1]);
+            }
+
+            // Convert sets to arrays and sort alphabetically
+            const insurersArray = Array.from(insurers).sort();
+            const requirementsArray = Array.from(requirements).sort();
+
+            // Populate insurance company dropdown
+            insurersArray.forEach(insurer => {
+                const option = document.createElement('option');
+                option.value = insurer;
+                option.textContent = insurer;
+                insuranceCompanySelect.appendChild(option);
+            });
+
+            // Populate amendment type dropdown
+            requirementsArray.forEach(requirement => {
+                const option = document.createElement('option');
+                option.value = requirement;
+                option.textContent = requirement;
+                amendmentTypeSelect.appendChild(option);
+            });
+        }
+
+        // Function to find and display the matching record
+        function displayResults() {
+            const insurer = document.getElementById('insurance-company').value;
+            const requirement = document.getElementById('amendment-type').value;
+            
+            const noSelectionElement = document.getElementById('no-selection');
+            const resultsElement = document.getElementById('results');
+            const notFoundElement = document.getElementById('not-found');
+
+            // Hide all result elements initially
+            noSelectionElement.classList.add('hidden');
+            resultsElement.classList.add('hidden');
+            notFoundElement.classList.add('hidden');
+
+            // If no selection made, show the placeholder
+            if (!insurer || !requirement) {
+                noSelectionElement.classList.remove('hidden');
+                return;
+            }
+
+            // Find the matching record
+            let matchingRecord = null;
+            for (let i = 1; i < insuranceData.length; i++) {
+                if (insuranceData[i][0] === insurer && insuranceData[i][1] === requirement) {
+                    matchingRecord = insuranceData[i];
+                    break;
+                }
+            }
+
+            // If no matching record found, show the not found message
+            if (!matchingRecord) {
+                notFoundElement.classList.remove('hidden');
+                return;
+            }
+
+            // Display the matching record
+            document.getElementById('result-title').textContent = `${requirement} - ${insurer}`;
+            document.getElementById('result-subtitle').textContent = `Requirements for making changes to the policy`;
+            
+            document.getElementById('endorsement-type').textContent = matchingRecord[2] || 'Not specified';
+            document.getElementById('documents').textContent = matchingRecord[3] || 'None required';
+            document.getElementById('tat').textContent = matchingRecord[4] || 'Not specified';
+            
+            // Format charges with a badge
+            const chargesElement = document.getElementById('charges');
+            const chargesValue = matchingRecord[5] || 'Not specified';
+            if (chargesValue.toLowerCase() === 'yes') {
+                chargesElement.innerHTML = '<span class="badge badge-yes">Yes</span>';
+            } else if (chargesValue.toLowerCase() === 'no') {
+                chargesElement.innerHTML = '<span class="badge badge-no">No</span>';
+            } else if (chargesValue.toLowerCase() === 'maybe') {
+                chargesElement.innerHTML = '<span class="badge badge-maybe">Maybe</span>';
+            } else if (chargesValue.toLowerCase() === 'refund') {
+                chargesElement.innerHTML = '<span class="badge" style="background-color: #dbeafe; color: #1e40af;">Refund</span>';
+            } else if (chargesValue.toLowerCase() === 'deduction') {
+                chargesElement.innerHTML = '<span class="badge" style="background-color: #ede9fe; color: #5b21b6;">Deduction</span>';
+            } else {
+                chargesElement.textContent = chargesValue;
+            }
+            
+            // Format inspection with a badge
+            const inspectionElement = document.getElementById('inspection');
+            const inspectionValue = matchingRecord[6] || 'Not specified';
+            if (inspectionValue.toLowerCase() === 'yes') {
+                inspectionElement.innerHTML = '<span class="badge badge-yes">Yes</span>';
+            } else if (inspectionValue.toLowerCase() === 'no') {
+                inspectionElement.innerHTML = '<span class="badge badge-no">No</span>';
+            } else if (inspectionValue.toLowerCase() === 'maybe') {
+                inspectionElement.innerHTML = '<span class="badge badge-maybe">Maybe</span>';
+            } else {
+                inspectionElement.textContent = inspectionValue;
+            }
+            
+            // Handle exceptions
+            const exceptionElement = document.getElementById('exceptions');
+            const exceptionRow = document.getElementById('exception-row');
+            if (matchingRecord[7] && matchingRecord[7].trim() !== '') {
+                exceptionElement.textContent = matchingRecord[7];
+                exceptionRow.classList.remove('hidden');
+            } else {
+                exceptionRow.classList.add('hidden');
+            }
+            
+            // Handle declaration format
+            const declarationElement = document.getElementById('declaration');
+            const declarationRow = document.getElementById('declaration-row');
+            if (matchingRecord[8] && matchingRecord[8].trim() !== '') {
+                declarationElement.textContent = matchingRecord[8];
+                declarationRow.classList.remove('hidden');
+            } else {
+                declarationRow.classList.add('hidden');
+            }
+            
+            // Show the results
+            resultsElement.classList.remove('hidden');
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            populateDropdowns();
+            
+            // Add event listeners to dropdowns
+            document.getElementById('insurance-company').addEventListener('change', displayResults);
+            document.getElementById('amendment-type').addEventListener('change', displayResults);
+        });
+    </script>
+</body>
+</html>
